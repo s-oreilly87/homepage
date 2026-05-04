@@ -12,7 +12,8 @@
     "@paper-design/shaders-react": "^0.0.76",
     "next": "^15.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "simple-icons": "^16.18.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.4",
