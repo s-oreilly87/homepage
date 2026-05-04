@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* ── Runtime font vars injected by next/font ─ */
+/* Declared here so linters can resolve them;   */
+/* next/font overwrites these on <html>.         */
+:root {
+  --font-dm-mono: ui-monospace;
+  --font-geist:   system-ui;
+}
+
 /* ── Theme tokens ────────────────────────────── */
 @theme {
   --color-page:     #0a0a0a;
@@ -22,12 +30,16 @@
 html {
   scroll-behavior: smooth;
   color-scheme: dark;
+  /* Mandatory snap — every stop must be visited in sequence */
+  scroll-snap-type: y mandatory;
+  /* Reserve space below fixed nav so snap targets land correctly */
+  scroll-padding-top: 56px;
 }
 
 body {
   background-color: var(--color-page);
   color: var(--color-primary);
-  font-family: var(--font-sans);
+  font-family: var(--font-sans), sans-serif;
   line-height: 1.7;
 }
 
@@ -54,7 +66,7 @@ a { text-decoration: none; color: inherit; }
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-family: var(--font-display);
+  font-family: var(--font-display), monospace;
   font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -70,6 +82,13 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
     opacity: 0.8;
   }
+}
+
+/* ── Section scroll snap ─────────────────────── */
+/* always = browser must stop here even on fast flicks */
+@utility snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 /* ── Grain overlay ───────────────────────────── */
