@@ -1,10 +1,10 @@
 export default function Hero() {
   return (
-    <section className="animate-hero min-h-[90svh] flex flex-col justify-end pb-16">
+    <section id="hero" className="animate-hero snap-section min-h-[90svh] flex flex-col justify-end pb-16">
 
       {/* Eyebrow */}
       <p className="font-display text-[0.6875rem] tracking-widest uppercase mb-10 flex items-center gap-3">
-        <span className="text-[#2d2d2d]">01</span>
+        <span className="text-[#444]">01</span>
         <span className="inline-block size-1.5 rounded-full bg-accent shrink-0" aria-hidden="true" />
         <span className="text-accent">Full-Stack Engineer</span>
       </p>
@@ -38,7 +38,7 @@ export default function Hero() {
       </div>
 
       {/* Meta */}
-      <p className="font-display text-[#3d3d3d] text-[0.75rem] flex flex-wrap gap-4">
+      <p className="font-display text-[#666] text-[0.75rem] flex flex-wrap gap-4">
         <span>Remote · NYC</span>
         <span className="text-line" aria-hidden="true">·</span>
         <span>Open to full-time &amp; contract</span>

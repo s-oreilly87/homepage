@@ -1,27 +1,46 @@
 "use client";
 
 import { useState } from "react";
+import { siGithub } from "simple-icons";
 
 // Resume email — change handle when GitHub is confirmed
 const EMAIL  = "sean@seanoreilly.dev";
 const GITHUB = "github.com/s-oreilly87";
 
-function ExternalLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
+// ── Inline SVG icons ─────────────────────────────────────────────────────
+function MailIcon() {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="font-display text-[0.8125rem] text-dim hover:text-accent transition-colors"
+    <svg
+      viewBox="0 0 16 16"
+      width={13}
+      height={13}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.25}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      style={{ flexShrink: 0 }}
     >
-      {children}
-    </a>
+      <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" />
+      <path d="M1.5 5L8 9.5L14.5 5" />
+    </svg>
+  );
+}
+
+function GitHubIcon() {
+  return (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      width={13}
+      height={13}
+      fill="currentColor"
+      aria-hidden="true"
+      style={{ flexShrink: 0 }}
+    >
+      <path d={siGithub.path} />
+    </svg>
   );
 }
 
@@ -37,7 +56,7 @@ export default function Contact() {
   }
 
   return (
-    <section className="animate-contact py-14 pb-28 border-t-2 border-line">
+    <section id="contact" className="animate-contact snap-section min-h-svh border-t-2 border-line flex flex-col justify-center pt-16 pb-30">
 
       <p className="section-label">Contact</p>
 
@@ -51,8 +70,9 @@ export default function Contact() {
           <a
             href={`mailto:${EMAIL}`}
             onClick={handleEmailClick}
-            className="font-display text-[0.8125rem] text-dim hover:text-accent transition-colors"
+            className="flex items-center gap-2 font-display text-[0.8125rem] text-dim hover:text-accent transition-colors"
           >
+            <MailIcon />
             {EMAIL}
           </a>
           {copied && (
@@ -64,7 +84,15 @@ export default function Contact() {
 
         <span className="text-line" aria-hidden="true">·</span>
 
-        <ExternalLink href={`https://${GITHUB}`}>{GITHUB}</ExternalLink>
+        <a
+          href={`https://${GITHUB}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 font-display text-[0.8125rem] text-dim hover:text-accent transition-colors"
+        >
+          <GitHubIcon />
+          {GITHUB}
+        </a>
 
       </div>
     </section>
