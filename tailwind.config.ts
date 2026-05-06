@@ -14,7 +14,7 @@ const config: Config = {
         border: "#1E1E1E",
         text: "#F0F0F0",
         muted: "#888888",
-        accent: "#C8F542",
+        accent: "#fb923c",
       },
       fontFamily: {
         mono: ["var(--font-mono)", "monospace"],

@@ -77,7 +77,7 @@ export default function CanvasBackground() {
 
           ctx.beginPath();
           ctx.arc(cx, cy, 1, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(200, 245, 66, ${alpha})`; // accent tint
+          ctx.fillStyle = `rgba(251, 146, 60, ${alpha})`; // accent tint
           ctx.fill();
         }
       }
