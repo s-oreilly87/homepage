@@ -1,0 +1,13 @@
+services:
+  homepage:
+    build: .
+    container_name: homepage
+    restart: always
+    ports:
+      - "8090:3000"
+    volumes:
+      - .:/app
+      # Anonymous volumes to prevent host node_modules/.next from being overwritten 
+      # or used if they are incompatible with the container's OS
+      - /app/node_modules
+      - /app/.next
