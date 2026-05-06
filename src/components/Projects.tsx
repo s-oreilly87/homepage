@@ -151,16 +151,29 @@ export default function Projects() {
 
   // Slot geometry stored in a ref so the scroll handler always reads fresh values
   // without triggering re-renders.
-  const slotData = useRef<{ offsets: number[]; sizes: number[] }>({
+  const slotData = useRef<{ offsets: number[]; sizes: number[]; sectionTop: number }>({
     offsets: [],
     sizes:   [],
+    sectionTop: 0,
   });
 
   const N = projects.length;
 
   // ── Slot geometry computation ────────────────────────────────────────────
   useEffect(() => {
+    function getActualTop(el: HTMLElement | null): number {
+      let top = 0;
+      while (el) {
+        top += el.offsetTop;
+        el = el.offsetParent as HTMLElement | null;
+      }
+      return top;
+    }
+
     function computeSlots() {
+      const section = sectionRef.current;
+      if (!section) return;
+
       const vh       = window.innerHeight;
       const offsets: number[] = [];
       const sizes:   number[] = [];
@@ -176,12 +189,11 @@ export default function Projects() {
         acc += slotSize;
       });
 
-      slotData.current = { offsets, sizes };
+      const sectionTop = getActualTop(section);
+      slotData.current = { offsets, sizes, sectionTop };
 
       // Resize the section so there's exactly enough scroll distance
-      if (sectionRef.current) {
-        sectionRef.current.style.height = `${acc}px`;
-      }
+      section.style.height = `${acc}px`;
 
       // Re-position sentinels: sentinel i snaps to sectionTop + offsets[i].
       // ScrollManager/CSS-snap formula: target = el.top + scrollY - NAV_H
@@ -206,69 +218,78 @@ export default function Projects() {
 
   // ── Scroll animation ──────────────────────────────────────────────────────
   useEffect(() => {
+    let rafId: number;
+
     function onScroll() {
-      const section = sectionRef.current;
-      if (!section) return;
+      if (rafId) cancelAnimationFrame(rafId);
 
-      const sectionTop  = section.getBoundingClientRect().top + window.scrollY;
-      const vh          = window.innerHeight;
-      const rawScroll   = window.scrollY - sectionTop;
-      const { offsets, sizes } = slotData.current;
+      rafId = requestAnimationFrame(() => {
+        const vh          = window.innerHeight;
+        const { offsets, sizes, sectionTop } = slotData.current;
+        const rawScroll   = window.scrollY - sectionTop;
 
-      wrapRefs.current.forEach((wrap, i) => {
-        if (!wrap) return;
-        const inner = cardRefs.current[i];
+        wrapRefs.current.forEach((wrap, i) => {
+          if (!wrap) return;
+          const inner = cardRefs.current[i];
 
-        const slotStart      = offsets[i] ?? i * vh;
-        const slotSize       = sizes[i]   ?? vh;
-        const contentOverflow = slotSize - vh;          // extra px to scroll content
-        const scrollInSlot   = rawScroll - slotStart;
+          const slotStart      = offsets[i] ?? i * vh;
+          const slotSize       = sizes[i]   ?? vh;
+          const contentOverflow = slotSize - vh;          // extra px to scroll content
+          const scrollInSlot   = rawScroll - slotStart;
 
-        // ── 1. Below viewport — completely hidden ────────────────────────
-        if (scrollInSlot <= -vh) {
-          wrap.style.transform  = "translateY(100%)";
-          wrap.style.opacity    = "0";
-          if (inner) { inner.style.transform = ""; inner.style.opacity = ""; }
-          return;
-        }
+          // ── 1. Below viewport — completely hidden ────────────────────────
+          if (scrollInSlot <= -vh) {
+            wrap.style.transform  = "translate3d(0, 100%, 0)";
+            wrap.style.opacity    = "0";
+            if (inner) { 
+              inner.style.transform = "translate3d(0, 0, 0) scale(1)"; 
+              inner.style.opacity = "1"; 
+            }
+            return;
+          }
 
-        // ── 2. Entry — card slides up from below ────────────────────────
-        if (scrollInSlot < 0) {
-          const t = scrollInSlot / vh; // –1 → 0
-          wrap.style.transform = `translateY(${(-t * 100).toFixed(1)}%)`;
-          wrap.style.opacity   = Math.max(0, 1 + t).toFixed(3);
-          if (inner) { inner.style.transform = ""; inner.style.opacity = ""; }
-          return;
-        }
+          // ── 2. Entry — card slides up from below ────────────────────────
+          if (scrollInSlot < 0) {
+            const t = scrollInSlot / vh; // –1 → 0
+            wrap.style.transform = `translate3d(0, ${(-t * 100).toFixed(1)}%, 0)`;
+            wrap.style.opacity   = Math.max(0, 1 + t).toFixed(3);
+            if (inner) { 
+              inner.style.transform = "translate3d(0, 0, 0) scale(1)"; 
+              inner.style.opacity = "1"; 
+            }
+            return;
+          }
 
-        // ── 3. Content phase — shift card up to reveal overflow ──────────
-        const contentShift = Math.min(contentOverflow, scrollInSlot);
-        wrap.style.transform = contentShift > 0
-          ? `translateY(-${contentShift.toFixed(1)}px)`
-          : "";
-        wrap.style.opacity = "1";
+          // ── 3. Content phase — shift card up to reveal overflow ──────────
+          const contentShift = Math.max(0, Math.min(contentOverflow, scrollInSlot));
+          wrap.style.transform = `translate3d(0, -${contentShift.toFixed(1)}px, 0)`;
+          wrap.style.opacity = "1";
 
-        // ── 4. Transition phase — bury card as next one arrives ──────────
-        const transitionScroll = Math.max(0, scrollInSlot - contentOverflow);
-        const t = transitionScroll / vh; // 0 → 1+
+          // ── 4. Transition phase — bury card as next one arrives ──────────
+          const transitionScroll = Math.max(0, scrollInSlot - contentOverflow);
+          const t = transitionScroll / vh; // 0 → 1+
 
-        if (!inner) return;
-        if (t <= 0) {
-          inner.style.transform = "";
-          inner.style.opacity   = "";
-        } else {
-          const scale = Math.max(0.82, 1 - t * SCALE_STEP);
-          const op    = Math.max(0.35, 1 - t * OPACITY_STEP);
-          const ty    = (t * -Y_STEP).toFixed(1);
-          inner.style.transform = `scale(${scale.toFixed(4)}) translateY(${ty}px)`;
-          inner.style.opacity   = op.toFixed(3);
-        }
+          if (!inner) return;
+          if (t <= 0) {
+            inner.style.transform = "translate3d(0, 0, 0) scale(1)";
+            inner.style.opacity   = "1";
+          } else {
+            const scale = Math.max(0.82, 1 - t * SCALE_STEP);
+            const op    = Math.max(0.35, 1 - t * OPACITY_STEP);
+            const ty    = (t * -Y_STEP).toFixed(1);
+            inner.style.transform = `translate3d(0, ${ty}px, 0) scale(${scale.toFixed(4)})`;
+            inner.style.opacity   = op.toFixed(3);
+          }
+        });
       });
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
@@ -303,7 +324,7 @@ export default function Projects() {
       ))}
 
       {/* ── Sticky heading + card stack ──────────────────────────────────── */}
-      <div className="sticky z-10" style={{ top: `${NAV_H}px` }}>
+      <div className="sticky z-10" style={{ top: `${NAV_H}px`, willChange: "transform" }}>
 
         <div style={{ paddingTop: "28px", paddingBottom: "40px" }}>
           <p className="section-label" style={{ marginBottom: 0 }}>
@@ -333,7 +354,7 @@ export default function Projects() {
             >
               <div
                 ref={(el) => { cardRefs.current[i] = el; }}
-                style={{ transformOrigin: "top center" }}
+                style={{ transformOrigin: "top center", willChange: "transform, opacity" }}
               >
                 <ProjectCard project={project} index={i} />
               </div>
