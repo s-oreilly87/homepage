@@ -151,9 +151,10 @@ export default function Projects() {
 
   // Slot geometry stored in a ref so the scroll handler always reads fresh values
   // without triggering re-renders.
-  const slotData = useRef<{ offsets: number[]; sizes: number[] }>({
+  const slotData = useRef<{ offsets: number[]; sizes: number[]; sectionTop: number }>({
     offsets: [],
     sizes:   [],
+    sectionTop: 0,
   });
 
   const N = projects.length;
@@ -161,6 +162,9 @@ export default function Projects() {
   // ── Slot geometry computation ────────────────────────────────────────────
   useEffect(() => {
     function computeSlots() {
+      const section = sectionRef.current;
+      if (!section) return;
+
       const vh       = window.innerHeight;
       const offsets: number[] = [];
       const sizes:   number[] = [];
@@ -176,12 +180,11 @@ export default function Projects() {
         acc += slotSize;
       });
 
-      slotData.current = { offsets, sizes };
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+      slotData.current = { offsets, sizes, sectionTop };
 
       // Resize the section so there's exactly enough scroll distance
-      if (sectionRef.current) {
-        sectionRef.current.style.height = `${acc}px`;
-      }
+      section.style.height = `${acc}px`;
 
       // Re-position sentinels: sentinel i snaps to sectionTop + offsets[i].
       // ScrollManager/CSS-snap formula: target = el.top + scrollY - NAV_H
@@ -207,13 +210,9 @@ export default function Projects() {
   // ── Scroll animation ──────────────────────────────────────────────────────
   useEffect(() => {
     function onScroll() {
-      const section = sectionRef.current;
-      if (!section) return;
-
-      const sectionTop  = section.getBoundingClientRect().top + window.scrollY;
       const vh          = window.innerHeight;
+      const { offsets, sizes, sectionTop } = slotData.current;
       const rawScroll   = window.scrollY - sectionTop;
-      const { offsets, sizes } = slotData.current;
 
       wrapRefs.current.forEach((wrap, i) => {
         if (!wrap) return;
@@ -333,7 +332,7 @@ export default function Projects() {
             >
               <div
                 ref={(el) => { cardRefs.current[i] = el; }}
-                style={{ transformOrigin: "top center" }}
+                style={{ transformOrigin: "top center", willChange: "transform, opacity" }}
               >
                 <ProjectCard project={project} index={i} />
               </div>
