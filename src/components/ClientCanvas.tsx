@@ -10,10 +10,10 @@ export default function ClientCanvas() {
   return (
     <NeuroNoise
       colorBack="#0a0a0a"
-      colorMid="#0c1100"
-      colorFront="#c8f542"
+      colorMid="#431407"
+      colorFront="#fb923c"
       brightness={0.028}
-      contrast={0.35}
+      contrast={0.1}
       speed={0.3}
       // Render at ~100×56 regardless of screen size/DPR.
       // The 28px CSS blur makes low resolution completely invisible,
@@ -27,8 +27,8 @@ export default function ClientCanvas() {
         height: "100%",
         pointerEvents: "none",
         zIndex: 0,
-        filter: "blur(36px)",
-        transform: "scale(1.1)",
+        filter: "blur(16px)",
+        transform: "scale(1.4)",
         transformOrigin: "center",
       }}
     />

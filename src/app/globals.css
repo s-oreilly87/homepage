@@ -15,7 +15,7 @@
   --color-line:     #1e1e1e;
   --color-primary:  #f0f0f0;
   --color-dim:      #888888;
-  --color-accent:   #c8f542;
+  --color-accent:   #fb923c;
 
   /* Fonts — next/font injects --font-dm-mono and --font-geist on <html> */
   --font-display: var(--font-dm-mono), ui-monospace, monospace;
