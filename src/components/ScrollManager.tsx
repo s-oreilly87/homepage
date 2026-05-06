@@ -33,21 +33,22 @@ export default function ScrollManager() {
     html.style.scrollSnapType = "none";
 
     let locked = false;
+    let cachedTargets: number[] = [];
 
     /**
      * Collect snap-point scroll-Y positions from all .snap-section elements.
      * Subtracts NAV_H so the target lands just below the fixed nav.
      */
-    function getTargets(): number[] {
-      return Array.from(
-        document.querySelectorAll<HTMLElement>(".snap-section"),
-      )
-        .map((el) =>
-          Math.round(el.getBoundingClientRect().top + window.scrollY - NAV_H),
-        )
+    function refreshTargets() {
+      cachedTargets = Array.from(document.querySelectorAll<HTMLElement>(".snap-section"))
+        .map((el) => Math.round(el.getBoundingClientRect().top + window.scrollY - NAV_H))
         .filter((y) => y >= 0)
         .sort((a, b) => a - b);
     }
+
+    // Initial measure + re-measure on resize
+    refreshTargets();
+    window.addEventListener("resize", refreshTargets);
 
     function onWheel(e: WheelEvent) {
       // Normalise: Firefox deltaMode=1 (lines) → pixels
@@ -62,9 +63,9 @@ export default function ScrollManager() {
         return;
       }
 
-      const dir     = delta > 0 ? 1 : -1;
-      const cur     = window.scrollY;
-      const targets = getTargets();
+      const dir = delta > 0 ? 1 : -1;
+      const cur = window.scrollY;
+      const targets = cachedTargets;
       // Small hysteresis — don't re-snap to the point we're already on
       const PAD = 16;
 
@@ -87,6 +88,7 @@ export default function ScrollManager() {
 
     return () => {
       html.style.scrollSnapType = "";
+      window.removeEventListener("resize", refreshTargets);
       window.removeEventListener("wheel", onWheel);
     };
   }, []);

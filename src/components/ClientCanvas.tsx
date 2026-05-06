@@ -15,11 +15,11 @@ export default function ClientCanvas() {
       brightness={0.028}
       contrast={0.35}
       speed={0.3}
-      // Render at ~160×90 regardless of screen size/DPR.
-      // The 28px CSS blur makes sub-200px resolution completely invisible,
-      // but cuts fragment shader work by ~576× vs the default 4K cap.
+      // Render at ~100×56 regardless of screen size/DPR.
+      // The 28px CSS blur makes low resolution completely invisible,
+      // but significantly cuts fragment shader work.
       minPixelRatio={1}
-      maxPixelCount={160 * 90}
+      maxPixelCount={100 * 56}
       style={{
         position: "fixed",
         inset: 0,
@@ -27,8 +27,8 @@ export default function ClientCanvas() {
         height: "100%",
         pointerEvents: "none",
         zIndex: 0,
-        filter: "blur(28px)",
-        transform: "scale(1.06)",
+        filter: "blur(36px)",
+        transform: "scale(1.1)",
         transformOrigin: "center",
       }}
     />
