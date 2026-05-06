@@ -15,9 +15,6 @@ export default function ClientCanvas() {
       brightness={0.1}
       contrast={0.2}
       speed={0.3}
-      // Render at ~160×90 regardless of screen size/DPR.
-      // The CSS blur makes lower resolution acceptable,
-      // but significantly cuts fragment shader work.
       minPixelRatio={1}
       maxPixelCount={1920 * 1080}
       style={{
