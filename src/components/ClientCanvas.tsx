@@ -12,14 +12,14 @@ export default function ClientCanvas() {
       colorBack="#0a0a0a"
       colorMid="#431407"
       colorFront="#fb923c"
-      brightness={0.028}
-      contrast={0.1}
+      brightness={0.1}
+      contrast={0.2}
       speed={0.3}
-      // Render at ~100×56 regardless of screen size/DPR.
-      // The 28px CSS blur makes low resolution completely invisible,
+      // Render at ~160×90 regardless of screen size/DPR.
+      // The CSS blur makes lower resolution acceptable,
       // but significantly cuts fragment shader work.
       minPixelRatio={1}
-      maxPixelCount={100 * 56}
+      maxPixelCount={1920 * 1080}
       style={{
         position: "fixed",
         inset: 0,
@@ -27,8 +27,8 @@ export default function ClientCanvas() {
         height: "100%",
         pointerEvents: "none",
         zIndex: 0,
-        filter: "blur(16px)",
-        transform: "scale(1.4)",
+        filter: "blur(5px)",
+        transform: "scale(1.3)",
         transformOrigin: "center",
       }}
     />
