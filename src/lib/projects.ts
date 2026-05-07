@@ -14,6 +14,7 @@ export interface Project {
   href?: string;
   /** CSS linear-gradient color stops for the placeholder image */
   imagePalette: { from: string; via: string; to: string };
+  images?: string[];
 }
 
 export const projects: Project[] = [
@@ -29,7 +30,8 @@ export const projects: Project[] = [
     ],
     stack: ["Next.js", "HTTP", "Telnet", "WebSocket"],
     status: "in-progress",
-    imagePalette: { from: "#050d1c", via: "#0a1930", to: "#0d2244" },
+    imagePalette: {from: "#050d1c", via: "#0a1930", to: "#0d2244"},
+    images: ["/images/projects/htpc-remote-1.png"],
     // href: "https://...",
   },
   {
@@ -44,7 +46,8 @@ export const projects: Project[] = [
     ],
     stack: ["FastAPI", "React"],
     status: "polish",
-    imagePalette: { from: "#060f07", via: "#0b1e0d", to: "#0e2811" },
+    imagePalette: {from: "#060f07", via: "#0b1e0d", to: "#0e2811"},
+    images: ["/images/projects/hut-hunter-1.png", "/images/projects/hut-hunter-2.png"],
     // href: "https://...",
   },
   {
@@ -59,7 +62,7 @@ export const projects: Project[] = [
     ],
     stack: ["Next.js", "Claude API"],
     status: "to-build",
-    imagePalette: { from: "#0f0c00", via: "#1c1500", to: "#241c00" },
+    imagePalette: {from: "#0f0c00", via: "#1c1500", to: "#241c00"},
   },
   {
     title: "Beer Engine",
@@ -73,6 +76,12 @@ export const projects: Project[] = [
     ],
     stack: ["Laravel", "Inertia", "React"],
     status: "private",
-    imagePalette: { from: "#0f0600", via: "#1c0d00", to: "#221200" },
+    imagePalette: {from: "#0f0600", via: "#1c0d00", to: "#221200"},
+    images: [
+      "/images/projects/beer-engine-1.png",
+      "/images/projects/beer-engine-2.png",
+      "/images/projects/beer-engine-3.png",
+      "/images/projects/beer-engine-4.png",
+    ],
   },
 ];

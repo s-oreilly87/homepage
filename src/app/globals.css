@@ -1,4 +1,9 @@
 @import "tailwindcss";
+@property --bg-radial-percent {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
 
 /* ── Runtime font vars injected by next/font ─ */
 /* Declared here so linters can resolve them;   */
@@ -56,10 +61,10 @@ a { text-decoration: none; color: inherit; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@utility animate-hero    { animation: fadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@utility animate-stack   { animation: fadeUp 0.65s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@utility animate-projects{ animation: fadeUp 0.65s 0.30s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@utility animate-contact { animation: fadeUp 0.65s 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@utility animate-hero    { animation: fadeUp 1.6s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@utility animate-stack   { animation: fadeUp 1.6s 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@utility animate-projects{ animation: fadeUp 1.6s 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@utility animate-contact { animation: fadeUp 1.6s 1.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 /* ── Section label — accent rule + mono caps ── */
 @utility section-label {
