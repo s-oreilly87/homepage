@@ -1,33 +1,50 @@
 "use client";
 
 import { NeuroNoise } from "@paper-design/shaders-react";
+import { useEffect, useState } from "react";
 
 // Blur applied directly to the element — not backdrop-filter.
 // backdrop-filter composites with the HDR display pipeline and causes banding.
 // filter: blur() operates on the element before compositing — no banding.
 // scale(1.06) hides the soft edge artifacts that gaussian blur creates at boundaries.
 export default function ClientCanvas() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <NeuroNoise
-      colorBack="#0a0a0a"
-      colorMid="#431407"
-      colorFront="#fb923c"
-      brightness={0.1}
-      contrast={0.2}
-      speed={0.3}
-      minPixelRatio={1}
-      maxPixelCount={1920 * 1080}
+    <div
       style={{
+        opacity: mounted ? 1 : 0,
+        WebkitMaskImage: `radial-gradient(circle at center, black var(--bg-radial-percent), transparent calc(var(--bg-radial-percent) + 25%))`,
+        maskImage: `radial-gradient(circle at center, black var(--bg-radial-percent), transparent calc(var(--bg-radial-percent) + 25%))`,
+        ["--bg-radial-percent" as any]: mounted ? "150%" : "0%",
+        transition: "opacity 3s ease-in-out, --bg-radial-percent 3s ease-in-out",
         position: "fixed",
         inset: 0,
-        width: "100%",
-        height: "100%",
-        pointerEvents: "none",
         zIndex: 0,
-        filter: "blur(5px)",
-        transform: "scale(1.3)",
-        transformOrigin: "center",
+        pointerEvents: "none",
       }}
-    />
+    >
+      <NeuroNoise
+        colorBack="#0a0a0a"
+        colorMid="#431407"
+        colorFront="#fb923c"
+        brightness={0.1}
+        contrast={0.2}
+        speed={0.3}
+        minPixelRatio={1}
+        maxPixelCount={1920 * 1080}
+        style={{
+          width: "100%",
+          height: "100%",
+          filter: "blur(5px)",
+          transform: "scale(1.3)",
+          transformOrigin: "center",
+        }}
+      />
+    </div>
   );
 }

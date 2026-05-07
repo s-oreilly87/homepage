@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { projects, type Project } from "@/lib/projects";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import Image from "next/image";
+import { type Project, projects } from "@/lib/projects";
 import { TechLogo } from "@/components/TechLogo";
 
 // ── Constants ─────────────────────────────────────────────────────────────
@@ -10,28 +12,27 @@ const NAV_H = 56;
 // (sticky-container top) + heading paddingTop(28) + label(~20) + paddingBottom(40)
 const STICK_TOP = NAV_H + 88; // ≈ 144 px
 
-const CARD_GAP    = 32;   // breathing room below card before transition starts
-const SCALE_STEP  = 0.038;
+const CARD_GAP = 32;   // breathing room below card before transition starts
+const SCALE_STEP = 0.038;
 const OPACITY_STEP = 0.14;
-const Y_STEP      = 10;   // px translate-up per burial level
+const Y_STEP = 10;   // px translate-up per burial level
 
 const statusStyle: Record<
   Project["status"],
   { label: string; dot: string }
 > = {
-  "in-progress": { label: "In progress", dot: "bg-accent" },
-  polish:        { label: "Polishing",   dot: "bg-dim" },
-  "to-build":    { label: "Coming soon", dot: "bg-[#333]" },
-  private:       { label: "Private",     dot: "bg-[#2a2a2a]" },
+  "in-progress": {label: "In progress", dot: "bg-accent"},
+  polish: {label: "Polishing", dot: "bg-dim"},
+  "to-build": {label: "Coming soon", dot: "bg-[#333]"},
+  private: {label: "Private", dot: "bg-[#2a2a2a]"},
 };
 
 // ── Placeholder image ─────────────────────────────────────────────────────
-function PlaceholderImage({ palette }: { palette: Project["imagePalette"] }) {
+function PlaceholderImage({palette}: { palette: Project["imagePalette"] }) {
   return (
     <div
-      className="relative w-full rounded-xl overflow-hidden mb-6"
+      className="relative w-full rounded-xl overflow-hidden mb-6 aspect-video"
       style={{
-        aspectRatio: "16 / 6",
         background: `linear-gradient(145deg, ${palette.from} 0%, ${palette.via} 55%, ${palette.to} 100%)`,
       }}
     >
@@ -51,15 +52,207 @@ function PlaceholderImage({ palette }: { palette: Project["imagePalette"] }) {
         }}
         aria-hidden="true"
       />
-      <span className="absolute bottom-3 right-3.5 font-display text-[0.5rem] tracking-widest uppercase text-white/15 select-none">
+      <span
+        className="absolute bottom-3 right-3.5 font-display text-[0.5rem] tracking-widest uppercase text-white/15 select-none">
         Screenshot TBC
       </span>
     </div>
   );
 }
 
+// ── Image Modal ───────────────────────────────────────────────────────────
+function ImageModal({
+  src,
+  alt,
+  onClose,
+  onNext,
+  onPrev,
+  hasMultiple,
+}: {
+  src: string;
+  alt: string;
+  onClose: () => void;
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasMultiple: boolean;
+}) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") onNext?.();
+      if (e.key === "ArrowLeft") onPrev?.();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [onClose, onNext, onPrev]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-6 md:p-16 backdrop-blur-md transition-opacity duration-300"
+      onClick={onClose}
+    >
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        className="absolute top-6 right-6 z-50 size-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all border border-white/10"
+        aria-label="Close modal"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+
+      {hasMultiple && (
+        <>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPrev?.();
+            }}
+            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 size-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all border border-white/10 backdrop-blur-md"
+            aria-label="Previous image"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onNext?.();
+            }}
+            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 size-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all border border-white/10 backdrop-blur-md"
+            aria-label="Next image"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+          </button>
+        </>
+      )}
+
+      <div
+        className="relative w-full h-full flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className="object-contain transition-transform duration-300"
+          priority
+          sizes="100vw"
+        />
+      </div>
+    </div>
+  );
+}
+
+// ── Carousel image ────────────────────────────────────────────────────────
+function ImageCarousel({images, alt}: { images: string[]; alt: string }) {
+  const [index, setIndex] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+
+  const next = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    setIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prev = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    setIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  return (
+    <>
+      <div
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowModal(true);
+        }}
+        className="relative w-full aspect-video rounded-xl overflow-hidden mb-6 group bg-black/5 border border-line/50 cursor-zoom-in"
+      >
+      {images.map((src, i) => (
+        <div
+          key={src}
+          className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+            i === index ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <Image
+            src={src}
+            alt={`${alt} screenshot ${i + 1}`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 800px"
+            priority={i === 0}
+          />
+        </div>
+      ))}
+
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={prev}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 size-8 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity border border-white/10"
+            aria-label="Previous image"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                 strokeLinecap="round" strokeLinejoin="round">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 z-10 size-8 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity border border-white/10"
+            aria-label="Next image"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                 strokeLinecap="round" strokeLinejoin="round">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+          </button>
+
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            {images.map((_, i) => (
+              <div
+                key={i}
+                className={`size-1 rounded-full transition-all duration-300 ${
+                  i === index ? "bg-white w-3" : "bg-white/40"
+                }`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+
+    {showModal && createPortal(
+      <ImageModal
+        src={images[index]}
+        alt={alt}
+        onClose={() => setShowModal(false)}
+        onNext={images.length > 1 ? () => next() : undefined}
+        onPrev={images.length > 1 ? () => prev() : undefined}
+        hasMultiple={images.length > 1}
+      />,
+      document.body
+    )}
+  </>
+  );
+}
+
 // ── Project card ──────────────────────────────────────────────────────────
-function ProjectCard({ project, index }: { project: Project; index: number }) {
+function ProjectCard({project, index}: { project: Project; index: number }) {
   const status = statusStyle[project.status];
   const num = String(index + 1).padStart(2, "0");
 
@@ -73,16 +266,14 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         .join(" ")
         .trim()}
     >
-      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/35 to-transparent" />
-      <span
-        className="absolute top-5 right-6 font-display text-[0.625rem] tracking-widest text-[#2a2a2a] select-none"
-        aria-hidden="true"
-      >
-        {num}
-      </span>
-      <PlaceholderImage palette={project.imagePalette} />
+      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/35 to-transparent"/>
+      {project.images && project.images.length > 0 ? (
+        <ImageCarousel images={project.images} alt={project.title}/>
+      ) : (
+        <PlaceholderImage palette={project.imagePalette}/>
+      )}
       <div className="flex items-center gap-2 mb-4">
-        <span className={`size-1.5 rounded-full shrink-0 ${status.dot}`} aria-hidden="true" />
+        <span className={`size-1.5 rounded-full shrink-0 ${status.dot}`} aria-hidden="true"/>
         <span className="font-display text-[0.625rem] tracking-wide text-[#777]">
           {status.label}
         </span>
@@ -96,14 +287,14 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       <ul className="space-y-1.5 mb-6" aria-label="Key features">
         {project.highlights.map((h) => (
           <li key={h} className="flex items-start gap-2.5 text-[#777] text-[0.8125rem] leading-snug">
-            <span className="mt-[0.35em] size-1 rounded-full bg-accent/50 shrink-0" aria-hidden="true" />
+            <span className="mt-[0.35em] size-1 rounded-full bg-accent/50 shrink-0" aria-hidden="true"/>
             {h}
           </li>
         ))}
       </ul>
       <div className="flex flex-wrap gap-1.5 pt-5 border-t border-line">
         {project.stack.map((name) => (
-          <TechLogo key={name} name={name} size={12} />
+          <TechLogo key={name} name={name} size={12}/>
         ))}
       </div>
     </article>
@@ -144,16 +335,16 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 //       3. Transition (scrollInSlot: overflow → overflow+vh) — next card piles on
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Projects() {
-  const sectionRef   = useRef<HTMLElement>(null);
-  const wrapRefs     = useRef<(HTMLDivElement | null)[]>([]);   // outer
-  const cardRefs     = useRef<(HTMLDivElement | null)[]>([]);   // inner
+  const sectionRef = useRef<HTMLElement>(null);
+  const wrapRefs = useRef<(HTMLDivElement | null)[]>([]);   // outer
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);   // inner
   const sentinelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Slot geometry stored in a ref so the scroll handler always reads fresh values
   // without triggering re-renders.
   const slotData = useRef<{ offsets: number[]; sizes: number[]; sectionTop: number }>({
     offsets: [],
-    sizes:   [],
+    sizes: [],
     sectionTop: 0,
   });
 
@@ -174,14 +365,14 @@ export default function Projects() {
       const section = sectionRef.current;
       if (!section) return;
 
-      const vh       = window.innerHeight;
+      const vh = window.innerHeight;
       const offsets: number[] = [];
-      const sizes:   number[] = [];
-      let   acc = 0;
+      const sizes: number[] = [];
+      let acc = 0;
 
       wrapRefs.current.forEach((wrap, i) => {
         offsets[i] = acc;
-        const cardH    = wrap?.offsetHeight ?? vh;
+        const cardH = wrap?.offsetHeight ?? vh;
         const viewable = vh - STICK_TOP - CARD_GAP;
         const overflow = Math.max(0, cardH - viewable);
         const slotSize = overflow + vh;
@@ -190,7 +381,7 @@ export default function Projects() {
       });
 
       const sectionTop = getActualTop(section);
-      slotData.current = { offsets, sizes, sectionTop };
+      slotData.current = {offsets, sizes, sectionTop};
 
       // Resize the section so there's exactly enough scroll distance
       section.style.height = `${acc}px`;
@@ -224,26 +415,26 @@ export default function Projects() {
       if (rafId) cancelAnimationFrame(rafId);
 
       rafId = requestAnimationFrame(() => {
-        const vh          = window.innerHeight;
-        const { offsets, sizes, sectionTop } = slotData.current;
-        const rawScroll   = window.scrollY - sectionTop;
+        const vh = window.innerHeight;
+        const {offsets, sizes, sectionTop} = slotData.current;
+        const rawScroll = window.scrollY - sectionTop;
 
         wrapRefs.current.forEach((wrap, i) => {
           if (!wrap) return;
           const inner = cardRefs.current[i];
 
-          const slotStart      = offsets[i] ?? i * vh;
-          const slotSize       = sizes[i]   ?? vh;
+          const slotStart = offsets[i] ?? i * vh;
+          const slotSize = sizes[i] ?? vh;
           const contentOverflow = slotSize - vh;          // extra px to scroll content
-          const scrollInSlot   = rawScroll - slotStart;
+          const scrollInSlot = rawScroll - slotStart;
 
           // ── 1. Below viewport — completely hidden ────────────────────────
           if (scrollInSlot <= -vh) {
-            wrap.style.transform  = "translate3d(0, 100%, 0)";
-            wrap.style.opacity    = "0";
-            if (inner) { 
-              inner.style.transform = "translate3d(0, 0, 0) scale(1)"; 
-              inner.style.opacity = "1"; 
+            wrap.style.transform = "translate3d(0, 100%, 0)";
+            wrap.style.opacity = "0";
+            if (inner) {
+              inner.style.transform = "translate3d(0, 0, 0) scale(1)";
+              inner.style.opacity = "1";
             }
             return;
           }
@@ -252,10 +443,10 @@ export default function Projects() {
           if (scrollInSlot < 0) {
             const t = scrollInSlot / vh; // –1 → 0
             wrap.style.transform = `translate3d(0, ${(-t * 100).toFixed(1)}%, 0)`;
-            wrap.style.opacity   = Math.max(0, 1 + t).toFixed(3);
-            if (inner) { 
-              inner.style.transform = "translate3d(0, 0, 0) scale(1)"; 
-              inner.style.opacity = "1"; 
+            wrap.style.opacity = Math.max(0, 1 + t).toFixed(3);
+            if (inner) {
+              inner.style.transform = "translate3d(0, 0, 0) scale(1)";
+              inner.style.opacity = "1";
             }
             return;
           }
@@ -272,19 +463,19 @@ export default function Projects() {
           if (!inner) return;
           if (t <= 0) {
             inner.style.transform = "translate3d(0, 0, 0) scale(1)";
-            inner.style.opacity   = "1";
+            inner.style.opacity = "1";
           } else {
             const scale = Math.max(0.82, 1 - t * SCALE_STEP);
-            const op    = Math.max(0.35, 1 - t * OPACITY_STEP);
-            const ty    = (t * -Y_STEP).toFixed(1);
+            const op = Math.max(0.35, 1 - t * OPACITY_STEP);
+            const ty = (t * -Y_STEP).toFixed(1);
             inner.style.transform = `translate3d(0, ${ty}px, 0) scale(${scale.toFixed(4)})`;
-            inner.style.opacity   = op.toFixed(3);
+            inner.style.opacity = op.toFixed(3);
           }
         });
       });
     }
 
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", onScroll, {passive: true});
     onScroll();
     return () => {
       window.removeEventListener("scroll", onScroll);
@@ -297,7 +488,7 @@ export default function Projects() {
       id="projects"
       ref={sectionRef}
       className="animate-projects border-t-2 border-line relative"
-      style={{ height: `${N * 100}vh` /* overridden by computeSlots */ }}
+      style={{height: `${N * 100}vh` /* overridden by computeSlots */}}
     >
       {/*
         ── Snap sentinels ────────────────────────────────────────────────────
@@ -309,25 +500,27 @@ export default function Projects() {
       {projects.map((_, i) => (
         <div
           key={`snap-${i}`}
-          ref={(el) => { sentinelRefs.current[i] = el; }}
+          ref={(el) => {
+            sentinelRefs.current[i] = el;
+          }}
           className="snap-section"
           aria-hidden="true"
           style={{
-            position:      "absolute",
-            top:           `calc(${i} * 100vh + ${NAV_H}px)`, // overridden by computeSlots
-            left:          0,
-            right:         0,
-            height:        "100vh",
+            position: "absolute",
+            top: `calc(${i} * 100vh + ${NAV_H}px)`, // overridden by computeSlots
+            left: 0,
+            right: 0,
+            height: "100vh",
             pointerEvents: "none",
           }}
         />
       ))}
 
       {/* ── Sticky heading + card stack ──────────────────────────────────── */}
-      <div className="sticky z-10" style={{ top: `${NAV_H}px`, willChange: "transform" }}>
+      <div className="sticky z-10" style={{top: `${NAV_H}px`, willChange: "transform"}}>
 
-        <div style={{ paddingTop: "28px", paddingBottom: "40px" }}>
-          <p className="section-label" style={{ marginBottom: 0 }}>
+        <div style={{paddingTop: "28px", paddingBottom: "40px"}}>
+          <p className="section-label" style={{marginBottom: 0}}>
             Projects
           </p>
         </div>
@@ -342,21 +535,25 @@ export default function Projects() {
           {projects.map((project, i) => (
             <div
               key={project.title}
-              ref={(el) => { wrapRefs.current[i] = el; }}
+              ref={(el) => {
+                wrapRefs.current[i] = el;
+              }}
               style={{
                 position: i === 0 ? "relative" : "absolute",
-                top:      i === 0 ? undefined  : 0,
-                left:     i === 0 ? undefined  : 0,
-                right:    i === 0 ? undefined  : 0,
-                zIndex:   i + 1,
+                top: i === 0 ? undefined : 0,
+                left: i === 0 ? undefined : 0,
+                right: i === 0 ? undefined : 0,
+                zIndex: i + 1,
                 willChange: "transform, opacity",
               }}
             >
               <div
-                ref={(el) => { cardRefs.current[i] = el; }}
-                style={{ transformOrigin: "top center", willChange: "transform, opacity" }}
+                ref={(el) => {
+                  cardRefs.current[i] = el;
+                }}
+                style={{transformOrigin: "top center", willChange: "transform, opacity"}}
               >
-                <ProjectCard project={project} index={i} />
+                <ProjectCard project={project} index={i}/>
               </div>
             </div>
           ))}
