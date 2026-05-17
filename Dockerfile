@@ -1,23 +1,35 @@
-FROM node:20-alpine
-
-# Install git for the "pull on start" feature
-RUN apk add --no-cache git
-
+FROM node:20-alpine AS deps
 WORKDIR /app
 
-# The entrypoint will handle pulling/building, so we just need the environment ready
-# We copy package.json first to have dependencies in the image for faster first start
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-# Copy entrypoint script explicitly
-COPY entrypoint.sh ./
-RUN chmod +x entrypoint.sh
+FROM node:20-alpine AS builder
+WORKDIR /app
 
-# Copy everything else (respecting .dockerignore)
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN npm run build
 
-# Expose Next.js default port
-EXPOSE 3000
+FROM node:20-alpine AS runner
+WORKDIR /app
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENV HOSTNAME=0.0.0.0
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3001
+
+RUN addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3001
+
+CMD ["node", "server.js"]
