@@ -14,9 +14,7 @@ export default function Hero() {
         tabIndex={0}
         className="font-display text-primary tracking-tight mb-8 focus:outline-none"
         style={{ fontSize: "clamp(3rem, 11vw, 5.5rem)", lineHeight: 1.0 }}
-      >
-        Sean<br />O&apos;Reilly
-      </h1>
+      >Sean<br />O'Reilly</h1>
 
       {/* Accent rule */}
       <div className="w-10 h-px bg-accent mb-8" aria-hidden="true" />
@@ -25,8 +23,8 @@ export default function Hero() {
       <div className="text-dim text-base text-pretty max-w-[50ch] space-y-3 mb-8">
         <p>
           Senior full-stack engineer with over 4 years shipping production
-          software end-to-end. I&apos;ve built internal platforms,
-          event-driven backend systems, and LLM&thinsp;/&thinsp;AI agent
+          software end-to-end. I've built internal platforms,
+          event-driven backend systems, and LLM{"\u2009"}/{"\u2009"}AI agent
           pipelines — from ambiguous requirements through to production debugging.
         </p>
         <p>
@@ -42,7 +40,7 @@ export default function Hero() {
       <p className="font-display text-[#666] text-[0.75rem] flex flex-wrap gap-4">
         <span>Remote · NYC</span>
         <span className="text-line" aria-hidden="true">·</span>
-        <span>Open to full-time &amp; contract</span>
+        <span>Open to full-time & contract</span>
       </p>
 
     </section>
