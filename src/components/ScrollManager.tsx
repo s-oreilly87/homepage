@@ -72,14 +72,16 @@ export default function ScrollManager() {
     }
     let cachedTargets: SnapTarget[] = [];
 
+    function getDocumentTop(el: HTMLElement) {
+      return el.getBoundingClientRect().top + window.scrollY;
+    }
+
     // ── Snap target cache ────────────────────────────────────────────────
     function refreshTargets() {
       const sections = Array.from(document.querySelectorAll<HTMLElement>(".snap-section"));
       cachedTargets = sections
         .map((el) => {
-          let top = 0, curr: HTMLElement | null = el;
-          while (curr) { top += curr.offsetTop; curr = curr.offsetParent as HTMLElement | null; }
-          const y = Math.round(top - NAV_H);
+          const y = Math.round(getDocumentTop(el) - NAV_H);
 
           let focusEl: HTMLElement | null = null;
           if (el.id.startsWith("snap-project-")) {
@@ -145,6 +147,56 @@ export default function ScrollManager() {
       pollId = requestAnimationFrame(poll);
     }
 
+    function getProjectCardScroller(target: EventTarget | null) {
+      if (!(target instanceof Element)) return null;
+
+      const direct = target.closest<HTMLElement>("[data-project-card-scroll]");
+      if (direct) return direct;
+
+      const proxy = target.closest<HTMLElement>("[data-snap-target]");
+      if (!proxy) return null;
+
+      const nestedScroller = proxy.querySelector<HTMLElement>("[data-project-card-scroll]");
+      if (nestedScroller) return nestedScroller;
+
+      const selector = proxy.dataset.snapTarget;
+      if (!selector) return null;
+
+      return document.querySelector<HTMLElement>(
+        `[data-snap-target="${selector}"] [data-project-card-scroll]`,
+      );
+    }
+
+    function canScrollCard(scroller: HTMLElement, delta: number) {
+      const maxScroll = scroller.scrollHeight - scroller.clientHeight;
+      if (maxScroll <= 1) return false;
+
+      if (delta > 0) return scroller.scrollTop < maxScroll - 1;
+      return scroller.scrollTop > 1;
+    }
+
+    function getKeyScrollDelta(e: KeyboardEvent) {
+      if (e.key === "ArrowDown") return 56;
+      if (e.key === "ArrowUp") return -56;
+      if (e.key === "PageDown" || (e.key === " " && !e.shiftKey)) return window.innerHeight * 0.75;
+      if (e.key === "PageUp" || (e.key === " " && e.shiftKey)) return window.innerHeight * -0.75;
+      return 0;
+    }
+
+    function snapToAdjacent(delta: number, minOffset = 1) {
+      const dir = delta > 0 ? 1 : -1;
+      const cur = window.scrollY;
+
+      const target = dir > 0
+        ? cachedTargets.find(t => t.y > cur + minOffset)
+        : [...cachedTargets].reverse().find(t => t.y < cur - minOffset);
+
+      if (target === undefined) return false;
+
+      doScroll(target.y, target.focusEl);
+      return true;
+    }
+
     // ── Keyboard handler ─────────────────────────────────────────────────
     function onKeyDown(e: KeyboardEvent) {
       // If we're already moving, block other scroll keys to prevent queueing/jank
@@ -152,6 +204,16 @@ export default function ScrollManager() {
       if (locked && isScrollKey) {
         e.preventDefault();
         return;
+      }
+
+      const cardScrollDelta = getKeyScrollDelta(e);
+      if (cardScrollDelta !== 0) {
+        const scroller = getProjectCardScroller(e.target);
+        if (scroller && canScrollCard(scroller, cardScrollDelta)) {
+          e.preventDefault();
+          scroller.scrollBy({ top: cardScrollDelta, behavior: "auto" });
+          return;
+        }
       }
 
       const cur = window.scrollY;
@@ -192,9 +254,7 @@ export default function ScrollManager() {
       }
 
       if (targetEl) {
-        let top = 0, curr: HTMLElement | null = targetEl;
-        while (curr) { top += curr.offsetTop; curr = curr.offsetParent as HTMLElement | null; }
-        const targetY = Math.round(top - NAV_H);
+        const targetY = Math.round(getDocumentTop(targetEl) - NAV_H);
 
         // Only snap if we aren't already very close
         if (Math.abs(window.scrollY - targetY) > 10) {
@@ -208,9 +268,25 @@ export default function ScrollManager() {
       const now    = performance.now();
       const delta  = e.deltaMode === 1 ? e.deltaY * 30 : e.deltaY; // normalise Firefox line-mode
       const absDelta = Math.abs(delta);
+      const scroller = getProjectCardScroller(e.target);
 
       // Ignore absolute micro-nudges (browser housekeeping, rounding, etc.)
-      if (absDelta < 5) return;
+      if (absDelta < 5) {
+        if (scroller) e.preventDefault();
+        return;
+      }
+
+      if (!locked && scroller && canScrollCard(scroller, delta)) {
+        gesturePeak = 0;
+        lastGestureMs = 0;
+        return;
+      }
+
+      if (!locked && scroller) {
+        e.preventDefault();
+        snapToAdjacent(delta);
+        return;
+      }
 
       // ── Gesture peak tracking ─────────────────────────────────────────
       // A new gesture begins after GESTURE_RESET ms of silence.
@@ -236,17 +312,9 @@ export default function ScrollManager() {
       }
 
       // ── Intentional scroll — navigate to the adjacent section ─────────
-      const dir = delta > 0 ? 1 : -1;
-      const cur = window.scrollY;
-
-      const target = dir > 0
-        ? cachedTargets.find(t => t.y > cur + 1)
-        : [...cachedTargets].reverse().find(t => t.y < cur - 1);
-
-      if (target === undefined) return; // already at first / last section
+      if (!snapToAdjacent(delta)) return; // already at first / last section
 
       e.preventDefault();
-      doScroll(target.y, target.focusEl);
     }
 
     window.addEventListener("wheel", onWheel, { passive: false });
