@@ -158,7 +158,7 @@ function ImageModal({
 function ImageCarousel({images, alt}: { images: string[]; alt: string }) {
   const [index, setIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
-
+  // Track each image's natural aspect ratio; null until loaded (defaults to 16/9)
   const next = (e?: React.MouseEvent) => {
     e?.preventDefault();
     e?.stopPropagation();
@@ -173,81 +173,95 @@ function ImageCarousel({images, alt}: { images: string[]; alt: string }) {
 
   return (
     <>
-      <div
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setShowModal(true);
-        }}
-        className="relative w-full aspect-video rounded-xl overflow-hidden mb-6 group bg-black/5 border border-line/50 cursor-zoom-in"
-      >
-      {images.map((src, i) => (
+      {/*
+        Outer wrapper: position context for arrows.
+        Arrows sit at left-0/-translate-x-1/2 and right-0/translate-x-1/2,
+        so they overlap the image edge. The card's p-7 (28px) padding means
+        a 32px button centred on the edge is still 12px inside the article — no clipping.
+      */}
+      <div className="relative mb-6 group">
+
         <div
-          key={src}
-          className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
-            i === index ? "opacity-100" : "opacity-0"
-          }`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowModal(true);
+          }}
+          className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-line/50 cursor-zoom-in"
         >
-          <Image
-            src={src}
-            alt={`${alt} screenshot ${i + 1}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 800px"
-            priority={i === 0}
-          />
-        </div>
-      ))}
-
-      {images.length > 1 && (
-        <>
-          <button
-            onClick={prev}
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 size-8 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity border border-white/10"
-            aria-label="Previous image"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-                 strokeLinecap="round" strokeLinejoin="round">
-              <path d="m15 18-6-6 6-6"/>
-            </svg>
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 z-10 size-8 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity border border-white/10"
-            aria-label="Next image"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-                 strokeLinecap="round" strokeLinejoin="round">
-              <path d="m9 18 6-6-6-6"/>
-            </svg>
-          </button>
-
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-            {images.map((_, i) => (
-              <div
-                key={i}
-                className={`size-1 rounded-full transition-all duration-300 ${
-                  i === index ? "bg-white w-3" : "bg-white/40"
-                }`}
+          {images.map((src, i) => (
+            <div
+              key={src}
+              className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+                i === index ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={src}
+                alt={`${alt} screenshot ${i + 1}`}
+                fill
+                className="object-contain"
+sizes="(max-width: 768px) 100vw, 800px"
+                priority={i === 0}
               />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+            </div>
+          ))}
 
-    {showModal && createPortal(
-      <ImageModal
-        src={images[index]}
-        alt={alt}
-        onClose={() => setShowModal(false)}
-        onNext={images.length > 1 ? () => next() : undefined}
-        onPrev={images.length > 1 ? () => prev() : undefined}
-        hasMultiple={images.length > 1}
-      />,
-      document.body
-    )}
-  </>
+          {images.length > 1 && (
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+              {images.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-1 rounded-full transition-all duration-300 ${
+                    i === index ? "bg-white w-3" : "bg-white/40 w-1"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={prev}
+              className="absolute left-0 -translate-x-1/2 top-1/2 -translate-y-1/2 z-10 size-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/15 transition-all
+                         opacity-100 md:opacity-0 md:group-hover:opacity-100"
+              aria-label="Previous image"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                   strokeLinecap="round" strokeLinejoin="round">
+                <path d="m15 18-6-6 6-6"/>
+              </svg>
+            </button>
+            <button
+              onClick={next}
+              className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 z-10 size-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/15 transition-all
+                         opacity-100 md:opacity-0 md:group-hover:opacity-100"
+              aria-label="Next image"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                   strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+            </button>
+          </>
+        )}
+
+      </div>
+
+      {showModal && createPortal(
+        <ImageModal
+          src={images[index]}
+          alt={alt}
+          onClose={() => setShowModal(false)}
+          onNext={images.length > 1 ? () => next() : undefined}
+          onPrev={images.length > 1 ? () => prev() : undefined}
+          hasMultiple={images.length > 1}
+        />,
+        document.body
+      )}
+    </>
   );
 }
 
@@ -278,9 +292,45 @@ function ProjectCard({project, index}: { project: Project; index: number }) {
           {status.label}
         </span>
       </div>
-      <h3 className="font-display text-primary text-[1.125rem] leading-snug mb-3">
-        {project.title}
-      </h3>
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <h3 className="font-display text-primary text-[1.125rem] leading-snug">
+          {project.title}
+        </h3>
+        {(project.github || project.site) && (
+          <div className="flex items-center gap-1 shrink-0 mt-0.5">
+            {project.github && (
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+                aria-label={`${project.title} on GitHub`}
+                className="size-7 flex items-center justify-center rounded-md text-[#555] hover:text-primary hover:bg-white/5 transition-colors"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.026 2.747-1.026.546 1.378.202 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.848-2.338 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.579.688.481C19.138 20.2 22 16.447 22 12.021 22 6.484 17.523 2 12 2z"/>
+                </svg>
+              </a>
+            )}
+            {project.site && (
+              <a
+                href={project.site}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+                aria-label={`${project.title} live site`}
+                className="size-7 flex items-center justify-center rounded-md text-[#555] hover:text-primary hover:bg-white/5 transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
+            )}
+          </div>
+        )}
+      </div>
       <p className="text-dim text-sm text-pretty leading-relaxed mb-5">
         {project.description}
       </p>
