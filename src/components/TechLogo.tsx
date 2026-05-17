@@ -16,6 +16,7 @@ import {
   siTailwindcss,
   siAnthropic,
   siInertia,
+  siTanstack,
   type SimpleIcon,
 } from "simple-icons";
 
@@ -39,6 +40,7 @@ const ICON_MAP: Record<string, SimpleIcon> = {
   "Claude API":   siAnthropic,
   Anthropic:      siAnthropic,
   Inertia:        siInertia,
+  Tanstack:       siTanstack,
 };
 
 interface TechLogoProps {
@@ -54,7 +56,7 @@ interface TechLogoProps {
 
 /**
  * Renders a Simple Icons SVG + optional text label for a given tech name.
- * Falls back to a plain text tag if no icon is found.
+ * Handles cases where an icon might be missing by rendering a consistent pill.
  */
 export function TechLogo({
   name,
@@ -64,16 +66,7 @@ export function TechLogo({
 }: TechLogoProps) {
   const icon = ICON_MAP[name];
 
-  // ── No icon found — plain text tag fallback ──────────────────────────────
-  if (!icon) {
-    return (
-      <span className="font-display text-[0.625rem] text-[#777] bg-page border border-line rounded px-2 py-0.5">
-        {name}
-      </span>
-    );
-  }
-
-  const svgEl = (
+  const svgEl = icon ? (
     <svg
       role="img"
       viewBox="0 0 24 24"
@@ -85,7 +78,7 @@ export function TechLogo({
     >
       <path d={icon.path} />
     </svg>
-  );
+  ) : null;
 
   if (variant === "bare") {
     return (

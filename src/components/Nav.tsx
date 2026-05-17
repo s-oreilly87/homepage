@@ -62,11 +62,10 @@ export default function Nav() {
     >
       {/* Logo / name */}
       <button
+        id="nav-logo"
         onClick={() => scrollTo("hero")}
         className="font-display text-[0.6875rem] tracking-widest text-accent hover:text-primary transition-colors duration-200 uppercase"
-      >
-        Sean O&apos;Reilly
-      </button>
+      >Sean O'Reilly</button>
 
       {/* Section links */}
       <nav className="flex items-center gap-7" aria-label="Page sections">
