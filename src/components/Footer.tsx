@@ -16,9 +16,9 @@ export default function Footer() {
         <span className="text-[#444] text-[0.625rem] font-display uppercase tracking-[0.2em]">Built with</span>
         <div className="flex flex-wrap justify-center gap-2 px-6">
           <TechLogo name="Next.js" size={12} />
+          <TechLogo name="React" size={12} />
           <TechLogo name="TypeScript" size={12} />
           <TechLogo name="Tailwind CSS" size={12} />
-          <TechLogo name="React" size={12} />
         </div>
       </div>
       
