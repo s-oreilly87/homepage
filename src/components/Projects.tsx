@@ -21,10 +21,12 @@ const statusStyle: Record<
   Project["status"],
   { label: string; dot: string }
 > = {
+  "live": {label: "Live", dot: "bg-green-600"},
   "in-progress": {label: "In progress", dot: "bg-accent"},
   polish: {label: "Polishing", dot: "bg-dim"},
   "to-build": {label: "Coming soon", dot: "bg-[#333]"},
   private: {label: "Private", dot: "bg-[#2a2a2a]"},
+  "coming-soon": {label: "Coming soon", dot: "bg-[#333]"},
 };
 
 // ── Placeholder image ─────────────────────────────────────────────────────

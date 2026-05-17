@@ -2,7 +2,9 @@ export type ProjectStatus =
   | "in-progress"
   | "polish"
   | "to-build"
-  | "private";
+  | "private"
+  | "coming-soon"
+  | "live";
 
 export interface Project {
   title: string;
@@ -32,7 +34,7 @@ export const projects: Project[] = [
       "PWA — installable from any browser on the local network, swipeable panel layout built for phones",
     ],
     stack: ["Next.js", "TypeScript", "Socket.io", "Tailwind CSS"],
-    status: "in-progress",
+    status: "live",
     imagePalette: {from: "#050d1c", via: "#0a1930", to: "#0d2244"},
     images: ["/images/projects/htpc-remote-1.png", "/images/projects/htpc-remote-2.png", "/images/projects/htpc-remote-3.png"],
     github: "https://github.com/s-oreilly87/htpc-remote",
@@ -50,7 +52,7 @@ export const projects: Project[] = [
       "Adapter architecture makes it straightforward to add new booking sites beyond the current DOC flows",
     ],
     stack: ["FastAPI", "React", "Playwright", "ARQ / Redis"],
-    status: "polish",
+    status: "live",
     imagePalette: {from: "#060f07", via: "#0b1e0d", to: "#0e2811"},
     images: ["/images/projects/hut-hunter-1.png", "/images/projects/hut-hunter-2.png", "/images/projects/hut-hunter-3.png", "/images/projects/hut-hunter-4.png"],
     href: "https://hut-hunter.seanoreilly.dev",
@@ -70,7 +72,7 @@ export const projects: Project[] = [
       "Multi-brewery support with per-brewery inventory across hops, fermentables, yeasts, and misc ingredients",
     ],
     stack: ["Laravel", "Inertia", "React", "AI"],
-    status: "private",
+    status: "coming-soon",
     imagePalette: {from: "#0f0600", via: "#1c0d00", to: "#221200"},
     images: [
       "/images/projects/beer-engine-1.png",
