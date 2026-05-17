@@ -20,7 +20,6 @@ import {
   type SimpleIcon,
 } from "simple-icons";
 
-/** Map display names → Simple Icons data */
 const ICON_MAP: Record<string, SimpleIcon> = {
   React:          siReact,
   "Next.js":      siNextdotjs,
@@ -44,20 +43,12 @@ const ICON_MAP: Record<string, SimpleIcon> = {
 };
 
 interface TechLogoProps {
-  /** Display name used for icon lookup and label */
   name: string;
-  /** Show the text label alongside the icon (default: true) */
   showLabel?: boolean;
-  /** Icon size in px (default: 13) */
   size?: number;
-  /** Visual variant — "pill" wraps in a bordered container, "bare" is icon+text only */
   variant?: "pill" | "bare";
 }
 
-/**
- * Renders a Simple Icons SVG + optional text label for a given tech name.
- * Handles cases where an icon might be missing by rendering a consistent pill.
- */
 export function TechLogo({
   name,
   showLabel = true,
@@ -89,7 +80,6 @@ export function TechLogo({
     );
   }
 
-  // ── Pill variant ─────────────────────────────────────────────────────────
   return (
     <span className="inline-flex items-center gap-1.5 font-display text-[0.6875rem] text-dim hover:text-primary hover:border-line/60 transition-colors duration-200 bg-surface border border-line rounded-md px-2.5 py-1.5 cursor-default">
       {svgEl}

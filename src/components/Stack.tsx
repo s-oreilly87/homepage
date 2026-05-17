@@ -1,14 +1,9 @@
 import { TechLogo } from "@/components/TechLogo";
 
-// ── Tech stack — ordered by prominence across résumé ─────────────────────
 const STACK = [
-  // Frontend
   "React", "Next.js", "TypeScript", "Vue.js", "Tailwind CSS", "Tanstack",
-  // Backend
   "Laravel", "PHP", "Python", "FastAPI", "Java", "Spring Boot",
-  // Data / Infra
   "MySQL", "PostgreSQL", "Redis", "Docker",
-  // AI
   "Claude API",
 ];
 
