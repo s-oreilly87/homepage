@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
 import { projects } from "@/lib/projects";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import {
@@ -230,7 +231,11 @@ export default function Projects() {
                 ref={(element) => {
                   cardRefs.current[index] = element;
                 }}
-                style={{ transformOrigin: "top center", willChange: "transform, opacity" }}
+                style={{
+                  "--project-card-max-height": `calc(100svh - ${STICKY_TOP_OFFSET + CARD_GAP}px)`,
+                  transformOrigin: "top center",
+                  willChange: "transform, opacity",
+                } as CSSProperties}
               >
                 <ProjectCard project={project} />
               </div>
