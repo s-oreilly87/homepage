@@ -108,5 +108,10 @@ export const projects: Project[] = [
     ],
     status: "in-progress",
     imagePalette: { from: "#0b1020", via: "#12312b", to: "#d4a72c" },
+    images: [
+      "/images/projects/trading-alerts-1.png",
+      "/images/projects/trading-alerts-2.png",
+      "/images/projects/trading-alerts-3.png",
+    ],
   }
 ];
