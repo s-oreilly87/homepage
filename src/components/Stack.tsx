@@ -16,11 +16,11 @@ export default function Stack() {
   return (
     <section id="stack" className="animate-stack snap-section min-h-svh border-t-2 border-line flex flex-col justify-center pt-16 pb-30">
 
-      <p className="section-label">Stack</p>
+      <p tabIndex={0} className="section-label focus:outline-none focus-visible:text-accent transition-colors w-fit">Stack</p>
 
       <p className="text-dim text-base text-pretty max-w-[52ch] mb-8">
-        Strongest in Laravel and React&thinsp;/&thinsp;Next.js. Also comfortable in Java and
-        Python-based frameworks. Recently hands-on with LLM API integration and
+        I'm strongest building with Laravel and React&thinsp;/&thinsp;Next.js. Also very comfortable in Java and
+        Python-based frameworks and Vue.js frontends. Recently hands-on with LLM API integration and
         AI agent workflows using MCP tooling in production.
       </p>
 

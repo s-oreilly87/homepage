@@ -65,7 +65,12 @@ export default function ScrollManager() {
     let pollId: number | null = null;
     let gesturePeak   = 0;   // largest abs-delta seen in the current gesture
     let lastGestureMs = 0;   // timestamp of the last wheel event
-    let cachedTargets: number[] = [];
+    interface SnapTarget {
+      y: number;
+      el: HTMLElement;
+      focusEl: HTMLElement | null;
+    }
+    let cachedTargets: SnapTarget[] = [];
 
     // ── Snap target cache ────────────────────────────────────────────────
     function refreshTargets() {
@@ -74,10 +79,27 @@ export default function ScrollManager() {
         .map((el) => {
           let top = 0, curr: HTMLElement | null = el;
           while (curr) { top += curr.offsetTop; curr = curr.offsetParent as HTMLElement | null; }
-          return Math.round(top - NAV_H);
+          const y = Math.round(top - NAV_H);
+
+          let focusEl: HTMLElement | null = null;
+          if (el.id.startsWith("snap-project-")) {
+            const idx = parseInt(el.id.replace("snap-project-", ""));
+            if (idx === 0) {
+              // The "Projects" section label
+              focusEl = document.querySelector("#projects .section-label") as HTMLElement;
+            } else {
+              // Focus the card wrapper (tabIndex=-1) so the NEXT tab hits the carousel
+              focusEl = document.querySelector(`[data-snap-target="#${el.id}"]`) as HTMLElement;
+            }
+          } else {
+            // Hero, Stack, Contact: focus the tabIndex=0 anchor inside them
+            focusEl = el.querySelector('[tabindex="0"]') as HTMLElement;
+          }
+
+          return { y, el, focusEl };
         })
-        .filter(y => y >= 0)
-        .sort((a, b) => a - b);
+        .filter(t => t.y >= 0)
+        .sort((a, b) => a.y - b.y);
     }
 
     refreshTargets();
@@ -88,7 +110,7 @@ export default function ScrollManager() {
     // ── Scroll animation ─────────────────────────────────────────────────
     // Uses the browser's compositor-threaded smooth scroll for visual quality,
     // with a polling loop to detect arrival reliably (scrollend is inconsistent).
-    function doScroll(target: number) {
+    function doScroll(target: number, focusEl?: HTMLElement | null) {
       if (pollId !== null) cancelAnimationFrame(pollId);
       locked = true;
 
@@ -103,6 +125,8 @@ export default function ScrollManager() {
         // where scrollY transiently passes through the target value.
         if (elapsed > 80 && Math.abs(window.scrollY - target) < ARRIVE_EPS) {
           pollId = null;
+          // Sync focus once we've arrived
+          focusEl?.focus({ preventScroll: true });
           setTimeout(() => { locked = false; }, POST_ARRIVE_MS);
           return;
         }
@@ -110,6 +134,7 @@ export default function ScrollManager() {
         // Safety valve — unlock if target is unreachable (e.g. near page bottom)
         if (elapsed > MAX_FLIGHT_MS) {
           pollId = null;
+          focusEl?.focus({ preventScroll: true });
           setTimeout(() => { locked = false; }, 150);
           return;
         }
@@ -130,12 +155,12 @@ export default function ScrollManager() {
       }
 
       const cur = window.scrollY;
-      let target: number | undefined;
+      let target: SnapTarget | undefined;
 
       if (e.key === "ArrowDown" || e.key === "PageDown" || (e.key === " " && !e.shiftKey)) {
-        target = cachedTargets.find(t => t > cur + 10);
+        target = cachedTargets.find(t => t.y > cur + 10);
       } else if (e.key === "ArrowUp" || e.key === "PageUp" || (e.key === " " && e.shiftKey)) {
-        target = [...cachedTargets].reverse().find(t => t < cur - 10);
+        target = [...cachedTargets].reverse().find(t => t.y < cur - 10);
       } else if (e.key === "Home") {
         target = cachedTargets[0];
       } else if (e.key === "End") {
@@ -144,7 +169,7 @@ export default function ScrollManager() {
 
       if (target !== undefined) {
         e.preventDefault();
-        doScroll(target);
+        doScroll(target.y, target.focusEl);
       }
     }
 
@@ -215,13 +240,13 @@ export default function ScrollManager() {
       const cur = window.scrollY;
 
       const target = dir > 0
-        ? cachedTargets.find(t => t > cur + 1)
-        : [...cachedTargets].reverse().find(t => t < cur - 1);
+        ? cachedTargets.find(t => t.y > cur + 1)
+        : [...cachedTargets].reverse().find(t => t.y < cur - 1);
 
       if (target === undefined) return; // already at first / last section
 
       e.preventDefault();
-      doScroll(target);
+      doScroll(target.y, target.focusEl);
     }
 
     window.addEventListener("wheel", onWheel, { passive: false });

@@ -62,6 +62,7 @@ export default function Nav() {
     >
       {/* Logo / name */}
       <button
+        id="nav-logo"
         onClick={() => scrollTo("hero")}
         className="font-display text-[0.6875rem] tracking-widest text-accent hover:text-primary transition-colors duration-200 uppercase"
       >

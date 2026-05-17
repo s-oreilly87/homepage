@@ -20,7 +20,7 @@ export default function Contact() {
   return (
     <section id="contact" className="animate-contact snap-section min-h-svh border-t-2 border-line flex flex-col justify-center pt-16 pb-30">
 
-      <p className="section-label">Contact</p>
+      <p tabIndex={0} className="section-label focus:outline-none focus-visible:text-accent transition-colors w-fit">Contact</p>
 
       <p className="text-dim text-base text-pretty max-w-[38ch] mb-6">
         Open to interesting problems. Feel free to reach out.

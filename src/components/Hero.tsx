@@ -11,7 +11,8 @@ export default function Hero() {
 
       {/* Name */}
       <h1
-        className="font-display text-primary tracking-tight mb-8"
+        tabIndex={0}
+        className="font-display text-primary tracking-tight mb-8 focus:outline-none"
         style={{ fontSize: "clamp(3rem, 11vw, 5.5rem)", lineHeight: 1.0 }}
       >
         Sean<br />O&apos;Reilly
@@ -23,7 +24,7 @@ export default function Hero() {
       {/* Bio */}
       <div className="text-dim text-base text-pretty max-w-[50ch] space-y-3 mb-8">
         <p>
-          Senior full-stack engineer with 4+ years shipping production
+          Senior full-stack engineer with over 4 years shipping production
           software end-to-end. I&apos;ve built internal platforms,
           event-driven backend systems, and LLM&thinsp;/&thinsp;AI agent
           pipelines — from ambiguous requirements through to production debugging.
