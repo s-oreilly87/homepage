@@ -69,7 +69,8 @@ export default function ScrollManager() {
 
     // ── Snap target cache ────────────────────────────────────────────────
     function refreshTargets() {
-      cachedTargets = Array.from(document.querySelectorAll<HTMLElement>(".snap-section"))
+      const sections = Array.from(document.querySelectorAll<HTMLElement>(".snap-section"));
+      cachedTargets = sections
         .map((el) => {
           let top = 0, curr: HTMLElement | null = el;
           while (curr) { top += curr.offsetTop; curr = curr.offsetParent as HTMLElement | null; }
@@ -119,6 +120,64 @@ export default function ScrollManager() {
       pollId = requestAnimationFrame(poll);
     }
 
+    // ── Keyboard handler ─────────────────────────────────────────────────
+    function onKeyDown(e: KeyboardEvent) {
+      // If we're already moving, block other scroll keys to prevent queueing/jank
+      const isScrollKey = ["ArrowDown", "ArrowUp", "Space", "PageDown", "PageUp", "Home", "End"].includes(e.key) || (e.key === " " && e.shiftKey);
+      if (locked && isScrollKey) {
+        e.preventDefault();
+        return;
+      }
+
+      const cur = window.scrollY;
+      let target: number | undefined;
+
+      if (e.key === "ArrowDown" || e.key === "PageDown" || (e.key === " " && !e.shiftKey)) {
+        target = cachedTargets.find(t => t > cur + 10);
+      } else if (e.key === "ArrowUp" || e.key === "PageUp" || (e.key === " " && e.shiftKey)) {
+        target = [...cachedTargets].reverse().find(t => t < cur - 10);
+      } else if (e.key === "Home") {
+        target = cachedTargets[0];
+      } else if (e.key === "End") {
+        target = cachedTargets[cachedTargets.length - 1];
+      }
+
+      if (target !== undefined) {
+        e.preventDefault();
+        doScroll(target);
+      }
+    }
+
+    // ── Focus handler ────────────────────────────────────────────────────
+    // When tabbing, the browser natively scrolls to the focused element.
+    // We catch this and "snap" to the nearest valid scroll point for that section.
+    function onFocusIn(e: FocusEvent) {
+      const el = e.target as HTMLElement;
+      if (!el) return;
+
+      // 1. Direct snap section
+      const snapSection = el.closest(".snap-section") as HTMLElement;
+      // 2. Proxy element that points to a snap target (e.g. project cards)
+      const proxy = el.closest("[data-snap-target]") as HTMLElement;
+
+      let targetEl = snapSection;
+      if (proxy) {
+        const selector = proxy.dataset.snapTarget;
+        if (selector) targetEl = document.querySelector(selector) as HTMLElement;
+      }
+
+      if (targetEl) {
+        let top = 0, curr: HTMLElement | null = targetEl;
+        while (curr) { top += curr.offsetTop; curr = curr.offsetParent as HTMLElement | null; }
+        const targetY = Math.round(top - NAV_H);
+
+        // Only snap if we aren't already very close
+        if (Math.abs(window.scrollY - targetY) > 10) {
+          doScroll(targetY);
+        }
+      }
+    }
+
     // ── Wheel handler ────────────────────────────────────────────────────
     function onWheel(e: WheelEvent) {
       const now    = performance.now();
@@ -166,6 +225,8 @@ export default function ScrollManager() {
     }
 
     window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("focusin", onFocusIn);
 
     return () => {
       html.style.scrollSnapType      = "";
@@ -173,6 +234,8 @@ export default function ScrollManager() {
       html.style.overscrollBehaviorY = "";
       window.removeEventListener("resize", refreshTargets);
       window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("focusin", onFocusIn);
       if (pollId !== null) cancelAnimationFrame(pollId);
       ro.disconnect();
     };

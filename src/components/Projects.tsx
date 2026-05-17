@@ -550,6 +550,7 @@ export default function Projects() {
       {projects.map((_, i) => (
         <div
           key={`snap-${i}`}
+          id={`snap-project-${i}`}
           ref={(el) => {
             sentinelRefs.current[i] = el;
           }}
@@ -585,6 +586,7 @@ export default function Projects() {
           {projects.map((project, i) => (
             <div
               key={project.title}
+              data-snap-target={`#snap-project-${i}`}
               ref={(el) => {
                 wrapRefs.current[i] = el;
               }}
