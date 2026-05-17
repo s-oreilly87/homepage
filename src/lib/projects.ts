@@ -15,7 +15,6 @@ export interface Project {
   href?: string;
   github?: string;
   site?: string;
-  /** CSS linear-gradient color stops for the placeholder image */
   imagePalette: { from: string; via: string; to: string };
   images?: string[];
 }
@@ -66,8 +65,7 @@ export const projects: Project[] = [
     highlights: [
       "Live recipe builder — OG, FG, ABV, IBU, and SRM recalculate on every edit across fermentables, hops, yeast, and mash",
       "AI recipe generator — pick a BJCP style, dial in parameters, add a guiding note, and get a fully built recipe ready to brew",
-      "Brew Day Wizard with step-by-step instructions, timestamp buttons, and live timers" +
-      "Fermentation gravity tracking with fermentation profile chart",
+      "Brew Day Wizard with step-by-step instructions, timestamp buttons, live timers, and fermentation gravity tracking",
       "Community recipes with fork-and-edit — recipe ancestry is tracked through parent → child chains",
       "Multi-brewery support with per-brewery inventory across hops, fermentables, yeasts, and misc ingredients",
     ],

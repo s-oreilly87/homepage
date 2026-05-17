@@ -2,11 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-// Lightweight pseudo-random noise background.
-// Draws slowly drifting dim dots — reads as texture, not spectacle.
-
 function hash(n: number): number {
-  // Simple integer hash
   n = Math.sin(n) * 43758.5453123;
   return n - Math.floor(n);
 }
@@ -44,7 +40,7 @@ export default function CanvasBackground() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let startTime = performance.now();
+    const startTime = performance.now();
 
     function resize() {
       if (!canvas) return;
@@ -57,11 +53,10 @@ export default function CanvasBackground() {
 
     function draw(now: number) {
       if (!canvas || !ctx) return;
-      const t = (now - startTime) * 0.00008; // very slow drift
+      const t = (now - startTime) * 0.00008;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw a grid of noise-modulated subtle circles
       const cellSize = 48;
       const cols = Math.ceil(canvas.width / cellSize) + 1;
       const rows = Math.ceil(canvas.height / cellSize) + 1;
@@ -69,15 +64,15 @@ export default function CanvasBackground() {
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
           const n = noise2d(x * 0.25 + t, y * 0.25 + t * 0.7);
-          if (n < 0.38) continue; // sparse — only draw some
+          if (n < 0.38) continue;
 
           const cx = x * cellSize + noise2d(x * 0.5 + t * 1.3, y * 0.3) * 12;
           const cy = y * cellSize + noise2d(x * 0.3, y * 0.5 + t) * 12;
-          const alpha = (n - 0.38) * 0.18; // max ~0.11
+          const alpha = (n - 0.38) * 0.18;
 
           ctx.beginPath();
           ctx.arc(cx, cy, 1, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(251, 146, 60, ${alpha})`; // accent tint
+          ctx.fillStyle = `rgba(251, 146, 60, ${alpha})`;
           ctx.fill();
         }
       }
