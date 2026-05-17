@@ -12,7 +12,6 @@ export default function Nav() {
   const [active, setActive] = useState<string>("");
 
   useEffect(() => {
-    // Observe each section — fires when it crosses the upper 30% of the viewport
     const observers: IntersectionObserver[] = [];
 
     NAV_LINKS.forEach(({ id }) => {
@@ -30,7 +29,6 @@ export default function Nav() {
       observers.push(obs);
     });
 
-    // Also activate hero when near the top
     const heroObs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) setActive("hero");
@@ -60,14 +58,12 @@ export default function Nav() {
         borderBottom: "1px solid rgba(255,255,255,0.04)",
       }}
     >
-      {/* Logo / name */}
       <button
         id="nav-logo"
         onClick={() => scrollTo("hero")}
         className="font-display text-[0.6875rem] tracking-widest text-accent hover:text-primary transition-colors duration-200 uppercase"
       >Sean O'Reilly</button>
 
-      {/* Section links */}
       <nav className="flex items-center gap-7" aria-label="Page sections">
         {NAV_LINKS.map(({ label, id }) => {
           const isActive = active === id;
@@ -82,7 +78,6 @@ export default function Nav() {
               aria-current={isActive ? "true" : undefined}
             >
               {label}
-              {/* Active underline dot */}
               {isActive && (
                 <span
                   className="absolute -bottom-1 left-1/2 -translate-x-1/2 size-1 rounded-full bg-accent"
