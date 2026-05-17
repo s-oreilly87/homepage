@@ -159,16 +159,30 @@ function ImageCarousel({images, alt}: { images: string[]; alt: string }) {
   const [index, setIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
   // Track each image's natural aspect ratio; null until loaded (defaults to 16/9)
-  const next = (e?: React.MouseEvent) => {
+  const next = (e?: React.MouseEvent | React.KeyboardEvent) => {
     e?.preventDefault();
     e?.stopPropagation();
     setIndex((prev) => (prev + 1) % images.length);
   };
 
-  const prev = (e?: React.MouseEvent) => {
+  const prev = (e?: React.MouseEvent | React.KeyboardEvent) => {
     e?.preventDefault();
     e?.stopPropagation();
     setIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight") {
+      next(e);
+    } else if (e.key === "ArrowLeft") {
+      prev(e);
+    } else if (e.key === "Enter" || e.key === " ") {
+      // If we are focused on the container (not the buttons), open modal
+      if (e.target === e.currentTarget) {
+        e.preventDefault();
+        setShowModal(true);
+      }
+    }
   };
 
   return (
@@ -179,7 +193,12 @@ function ImageCarousel({images, alt}: { images: string[]; alt: string }) {
         so they overlap the image edge. The card's p-7 (28px) padding means
         a 32px button centred on the edge is still 12px inside the article — no clipping.
       */}
-      <div className="relative mb-6 group z-10">
+      <div 
+        className="relative mb-6 group z-10 focus:outline-none"
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        aria-label={`Image carousel for ${alt}. Use arrow keys to navigate.`}
+      >
 
         <div
           onClick={(e) => {
@@ -225,8 +244,9 @@ sizes="(max-width: 768px) 100vw, 800px"
           <>
             <button
               onClick={prev}
+              tabIndex={-1}
               className="absolute left-0 -translate-x-1/2 top-1/2 -translate-y-1/2 z-10 size-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/15 transition-all
-                         opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                         opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent/50 outline-none"
               aria-label="Previous image"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
@@ -236,8 +256,9 @@ sizes="(max-width: 768px) 100vw, 800px"
             </button>
             <button
               onClick={next}
+              tabIndex={-1}
               className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 z-10 size-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/15 transition-all
-                         opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                         opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent/50 outline-none"
               aria-label="Next image"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
@@ -285,7 +306,10 @@ function ProjectCard({project, index}: { project: Project; index: number }) {
         </span>
       </div>
       <div className="flex items-start justify-between gap-3 mb-3">
-        <h3 className={`font-display text-primary text-[1.125rem] leading-snug relative group/title flex-1 transition-transform duration-300 origin-left py-1 -my-1 ${project.href ? "hover:scale-[1.01] cursor-pointer" : ""}`}>
+        <h3 
+          tabIndex={!project.href ? 0 : undefined}
+          className={`font-display text-primary text-[1.125rem] leading-snug relative group/title flex-1 transition-transform duration-300 origin-left py-1 -my-1 focus:outline-none focus-visible:text-accent ${project.href ? "hover:scale-[1.01] cursor-pointer" : ""}`}
+        >
           {project.href ? (
             <a
               href={project.href}
@@ -571,7 +595,12 @@ export default function Projects() {
       <div className="sticky z-10" style={{top: `${NAV_H}px`, willChange: "transform"}}>
 
         <div style={{paddingTop: "28px", paddingBottom: "40px"}}>
-          <p className="section-label" style={{marginBottom: 0}}>
+          <p 
+            tabIndex={0}
+            data-snap-target="#snap-project-0"
+            className="section-label focus:outline-none focus-visible:text-accent transition-colors w-fit" 
+            style={{marginBottom: 0}}
+          >
             Projects
           </p>
         </div>
@@ -587,6 +616,8 @@ export default function Projects() {
             <div
               key={project.title}
               data-snap-target={`#snap-project-${i}`}
+              tabIndex={-1}
+              className="focus:outline-none"
               ref={(el) => {
                 wrapRefs.current[i] = el;
               }}
