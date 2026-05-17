@@ -8,6 +8,8 @@ const NAV_LINKS = [
   { label: "Contact",  id: "contact" },
 ] as const;
 
+const NAV_HEIGHT = 56;
+
 export default function Nav() {
   const [active, setActive] = useState<string>("");
 
@@ -45,7 +47,11 @@ export default function Nav() {
   }, []);
 
   function scrollTo(id: string) {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    const target = document.getElementById(id === "projects" ? "snap-project-0" : id);
+    if (!target) return;
+
+    const top = target.getBoundingClientRect().top + window.scrollY - NAV_HEIGHT;
+    window.scrollTo({ top: Math.max(0, Math.round(top)), behavior: "smooth" });
   }
 
   return (
