@@ -77,6 +77,7 @@ export const projects: Project[] = [
       "/images/projects/beer-engine-2.png",
       "/images/projects/beer-engine-3.png",
       "/images/projects/beer-engine-4.png",
+      "/images/projects/beer-engine-5.png",
     ],
   },
   {
