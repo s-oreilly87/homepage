@@ -16,6 +16,7 @@ import {
   siTailwindcss,
   siAnthropic,
   siInertia,
+  siTanstack,
   type SimpleIcon,
 } from "simple-icons";
 
@@ -39,6 +40,7 @@ const ICON_MAP: Record<string, SimpleIcon> = {
   "Claude API":   siAnthropic,
   Anthropic:      siAnthropic,
   Inertia:        siInertia,
+  Tanstack:       siTanstack,
 };
 
 interface TechLogoProps {
