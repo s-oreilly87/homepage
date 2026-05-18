@@ -12,7 +12,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="mt-20 pb-20 flex flex-col items-center gap-12 border-t border-line">
+    <footer id="footer" className="snap-section mt-20 pb-20 flex flex-col items-center gap-12 border-t border-line">
       <div className="flex flex-col items-center gap-4 pt-16">
         <span className="text-[#444] text-[0.625rem] font-display uppercase tracking-[0.2em]">Built with</span>
         <div className="flex flex-wrap justify-center gap-2 px-6">
@@ -27,7 +27,8 @@ export default function Footer() {
         />
       </div>
       
-      <button 
+      <button
+        tabIndex={0}
         onClick={scrollToTop}
         className="group flex flex-col items-center gap-3 text-dim hover:text-primary focus:outline-none transition-all duration-300"
         aria-label="Back to top"
