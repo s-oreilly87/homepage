@@ -189,6 +189,25 @@ export default function ScrollManager() {
     }
     let cachedTargets: SnapTarget[] = [];
 
+    // ── Hovered-card cache ───────────────────────────────────────────────
+    // Updated via pointerover (fires once per element boundary, not 60×/sec)
+    // so the hot onWheel path just reads a variable instead of walking the DOM.
+    let hoveredScroller: HTMLElement | null = null;
+    let cachedCardMaxScroll = 0;
+
+    function onPointerOver(e: PointerEvent) {
+      if (!(e.target instanceof Element)) return;
+      const next = (e.target as Element).closest<HTMLElement>("[data-project-card-scroll]");
+      if (next !== hoveredScroller) {
+        hoveredScroller = next;
+        cachedCardMaxScroll = next
+          ? Math.max(0, next.scrollHeight - next.clientHeight)
+          : 0;
+      }
+    }
+
+    window.addEventListener("pointerover", onPointerOver, { passive: true });
+
     function getDocumentTop(el: HTMLElement) {
       return el.getBoundingClientRect().top + window.scrollY;
     }
@@ -219,6 +238,11 @@ export default function ScrollManager() {
         })
         .filter(t => t.y >= 0)
         .sort((a, b) => a.y - b.y);
+
+      // Keep cached card maxScroll fresh when layout changes
+      if (hoveredScroller) {
+        cachedCardMaxScroll = Math.max(0, hoveredScroller.scrollHeight - hoveredScroller.clientHeight);
+      }
     }
 
     refreshTargets();
@@ -285,7 +309,12 @@ export default function ScrollManager() {
     }
 
     function canScrollCard(scroller: HTMLElement, delta: number) {
-      const maxScroll = scroller.scrollHeight - scroller.clientHeight;
+      // Use the cached value when it's the hovered scroller (avoids scrollHeight/clientHeight
+      // reads that can force layout in the hot wheel path). Keyboard path may pass a different
+      // scroller, so fall back to a live read in that case.
+      const maxScroll = scroller === hoveredScroller
+        ? cachedCardMaxScroll
+        : Math.max(0, scroller.scrollHeight - scroller.clientHeight);
       if (maxScroll <= 1) return false;
 
       if (delta > 0) return scroller.scrollTop < maxScroll - 1;
@@ -401,7 +430,9 @@ export default function ScrollManager() {
       const now    = performance.now();
       const delta  = e.deltaMode === 1 ? e.deltaY * 30 : e.deltaY; // normalise Firefox line-mode
       const absDelta = Math.abs(delta);
-      const scroller = getProjectCardScroller(e.target);
+      // Use the pointer-cached scroller — avoids expensive DOM traversal on every tick.
+      // getProjectCardScroller is kept for keyboard (infrequent) but not needed here.
+      const scroller = hoveredScroller;
 
       // Ignore absolute micro-nudges (browser housekeeping, rounding, etc.)
       if (absDelta < 5) {
@@ -462,6 +493,7 @@ export default function ScrollManager() {
       html.style.scrollBehavior      = "";
       html.style.overscrollBehaviorY = "";
       window.removeEventListener("resize", refreshTargets);
+      window.removeEventListener("pointerover", onPointerOver);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("focusin", onFocusIn);

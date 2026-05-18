@@ -36,6 +36,14 @@ export default function Projects() {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const sentinelRefs = useRef<(HTMLDivElement | null)[]>([]);
   const slotData = useRef<SlotData>({ offsets: [], sizes: [], sectionTop: 0 });
+  // Tracks which card indices currently have will-change:transform,opacity set.
+  // We manage this dynamically: compositor promotion is active only while the
+  // card is transitioning (entering from below or fading out). When the card
+  // is at rest, we release the promotion so that the card's overflow-y:auto
+  // scroll container is no longer inside a compositor layer — this avoids the
+  // Chrome bug where overflow inside a will-change:transform ancestor forces
+  // the browser off the fast compositing path, causing scroll jitter.
+  const compositorActiveRef = useRef(new Set<number>());
 
   useEffect(() => {
     function computeSlots() {
@@ -90,6 +98,10 @@ export default function Projects() {
 
   useEffect(() => {
     let rafId: number;
+    // Track which cards are in the "fully below viewport" state to avoid rewriting
+    // identical styles on every RAF tick — these cards are never visible and their
+    // styles only need to be set once per transition in/out of that state.
+    const isBelowViewport = new Array(projects.length).fill(false);
 
     function onScroll() {
       if (rafId) cancelAnimationFrame(rafId);
@@ -108,21 +120,36 @@ export default function Projects() {
           const contentOverflow = slotSize - viewportHeight;
           const scrollInSlot = rawScroll - slotStart;
 
-          if (scrollInSlot <= -viewportHeight) {
-            wrap.style.transform = "translate3d(0, 100%, 0)";
-            wrap.style.opacity = "0";
-            wrap.style.pointerEvents = "none";
+          const compositorActive = compositorActiveRef.current;
 
-            if (inner) {
-              inner.style.transform = "translate3d(0, 0, 0) scale(1)";
-              inner.style.opacity = "1";
+          if (scrollInSlot <= -viewportHeight) {
+            // Only write styles once when first entering the below-viewport state
+            if (!isBelowViewport[index]) {
+              isBelowViewport[index] = true;
+              wrap.style.transform = "translate3d(0, 100%, 0)";
+              wrap.style.opacity = "0";
+              wrap.style.pointerEvents = "none";
+
+              if (inner) {
+                inner.style.transform = "translate3d(0, 0, 0) scale(1)";
+                inner.style.opacity = "1";
+              }
             }
             return;
           }
 
-          if (scrollInSlot < 0) {
-            const progress = scrollInSlot / viewportHeight;
+          // Exiting the below-viewport zone — clear the guard
+          isBelowViewport[index] = false;
 
+          if (scrollInSlot < 0) {
+            // ── Entering phase ── card is sliding in from below
+            // Promote to compositor layer for smooth GPU-driven animation.
+            if (!compositorActive.has(index)) {
+              compositorActive.add(index);
+              wrap.style.willChange = "transform, opacity";
+            }
+
+            const progress = scrollInSlot / viewportHeight;
             wrap.style.transform = `translate3d(0, ${(-progress * 100).toFixed(1)}%, 0)`;
             wrap.style.opacity = Math.max(0, 1 + progress).toFixed(3);
             wrap.style.pointerEvents = "auto";
@@ -145,9 +172,25 @@ export default function Projects() {
           const progress = transitionScroll / viewportHeight;
 
           if (progress <= 0) {
+            // ── At rest ── card is fully visible, user may be scrolling content
+            // Release the compositor promotion so the card's overflow-y:auto scroll
+            // container is no longer inside a will-change:transform layer. Chrome
+            // can't fully compositor-thread a transformed layer containing an
+            // overflow scroll container, which is the root cause of the scroll jitter.
+            if (compositorActive.has(index)) {
+              compositorActive.delete(index);
+              wrap.style.willChange = "auto";
+            }
             inner.style.transform = "translate3d(0, 0, 0) scale(1)";
             inner.style.opacity = "1";
             return;
+          }
+
+          // ── Exit phase ── card is scaling and fading as the next section scrolls in
+          // Promote back to compositor layer for smooth exit animation.
+          if (!compositorActive.has(index)) {
+            compositorActive.add(index);
+            wrap.style.willChange = "transform, opacity";
           }
 
           const scale = Math.max(0.82, 1 - progress * SCALE_STEP);
@@ -196,7 +239,7 @@ export default function Projects() {
         />
       ))}
 
-      <div className="sticky z-10" style={{ top: `${NAV_HEIGHT}px`, willChange: "transform" }}>
+      <div className="sticky z-10" style={{ top: `${NAV_HEIGHT}px` }}>
         <div style={{ paddingTop: "28px", paddingBottom: "40px" }}>
           <p
             tabIndex={0}
@@ -224,7 +267,7 @@ export default function Projects() {
                 left: index === 0 ? undefined : 0,
                 right: index === 0 ? undefined : 0,
                 zIndex: index + 1,
-                willChange: "transform, opacity",
+                // will-change managed dynamically in onScroll — see compositorActiveRef
               }}
             >
               <div
@@ -234,7 +277,10 @@ export default function Projects() {
                 style={{
                   "--project-card-max-height": `calc(100svh - ${STICKY_TOP_OFFSET + CARD_GAP}px)`,
                   transformOrigin: "top center",
-                  willChange: "transform, opacity",
+                  // No willChange here — cardRef is already inside wrapRef's
+                  // compositor layer. A nested will-change creates a compositor
+                  // sublayer, and having overflow-y:auto inside a sublayer forces
+                  // Chrome off its fast compositing path for the parent's transform.
                 } as CSSProperties}
               >
                 <ProjectCard project={project} />
