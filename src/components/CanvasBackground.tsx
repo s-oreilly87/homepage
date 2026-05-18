@@ -29,6 +29,8 @@ function noise2d(x: number, y: number): number {
   return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
 }
 
+const CELL = 48;
+
 export default function CanvasBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
@@ -41,43 +43,58 @@ export default function CanvasBackground() {
     if (!ctx) return;
 
     const startTime = performance.now();
+    let lastDrawTime = 0;
+    // cols/rows cached and only updated on resize
+    let cols = 0;
+    let rows = 0;
 
     function resize() {
       if (!canvas) return;
-      canvas.width = window.innerWidth;
+      canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
+      cols = Math.ceil(canvas.width  / CELL) + 1;
+      rows = Math.ceil(canvas.height / CELL) + 1;
     }
 
     resize();
     window.addEventListener("resize", resize);
 
     function draw(now: number) {
+      rafRef.current = requestAnimationFrame(draw);
+
+      // Throttle to ~30 fps — the animation moves at t*0.00008 so 30fps is
+      // visually indistinguishable from 60fps but halves the main-thread load.
+      if (now - lastDrawTime < 33) return;
+      lastDrawTime = now;
+
       if (!canvas || !ctx) return;
       const t = (now - startTime) * 0.00008;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const cellSize = 48;
-      const cols = Math.ceil(canvas.width / cellSize) + 1;
-      const rows = Math.ceil(canvas.height / cellSize) + 1;
+      // Single batched path: one beginPath + all arcs + one fill.
+      // The original code called fill() ~250 times per frame (one per visible
+      // dot), each requiring a separate canvas rasterise pass on the main
+      // thread. Batching collapses that to a single rasterise call.
+      ctx.fillStyle = "rgba(251, 146, 60, 0.08)";
+      ctx.beginPath();
 
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
           const n = noise2d(x * 0.25 + t, y * 0.25 + t * 0.7);
           if (n < 0.38) continue;
 
-          const cx = x * cellSize + noise2d(x * 0.5 + t * 1.3, y * 0.3) * 12;
-          const cy = y * cellSize + noise2d(x * 0.3, y * 0.5 + t) * 12;
-          const alpha = (n - 0.38) * 0.18;
+          const cx = x * CELL + noise2d(x * 0.5 + t * 1.3, y * 0.3) * 12;
+          const cy = y * CELL + noise2d(x * 0.3, y * 0.5 + t) * 12;
 
-          ctx.beginPath();
+          // moveTo before each arc is required so each circle is a separate
+          // sub-path (otherwise arcs are connected by straight lines).
+          ctx.moveTo(cx + 1, cy);
           ctx.arc(cx, cy, 1, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(251, 146, 60, ${alpha})`;
-          ctx.fill();
         }
       }
 
-      rafRef.current = requestAnimationFrame(draw);
+      ctx.fill();
     }
 
     rafRef.current = requestAnimationFrame(draw);
