@@ -4,6 +4,29 @@ import { ImageCarousel } from "@/components/projects/ImageCarousel";
 import { PlaceholderImage } from "@/components/projects/PlaceholderImage";
 import { projectStatusStyles } from "@/components/projects/constants";
 
+/**
+ * Strips HTML tags from a string for use in ARIA labels and other plain-text contexts.
+ */
+function stripHtml(html: string) {
+  return html.replace(/<[^>]*>?/gm, "");
+}
+
+/**
+ * A simple component to render text with support for basic HTML tags and custom <bold>/<italic> tags.
+ * Uses dangerouslySetInnerHTML as the content is trusted from the local project data.
+ */
+function FormattedText({ text }: { text: string }) {
+  if (!text) return null;
+
+  const processed = text
+    .replace(/<bold>/g, "<strong>")
+    .replace(/<\/bold>/g, "</strong>")
+    .replace(/<italic>/g, "<em>")
+    .replace(/<\/italic>/g, "</em>");
+
+  return <span dangerouslySetInnerHTML={{ __html: processed }} />;
+}
+
 interface ProjectCardProps {
   project: Project;
 }
@@ -40,7 +63,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               href={project.href}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`${project.title} - ${project.description}`}
+              aria-label={`${project.title} - ${stripHtml(project.description)}`}
               className="inline-flex items-center gap-1.5 hover:text-accent group-hover/title:text-accent transition-colors after:absolute after:inset-0 after:z-0"
             >
               {project.title}
@@ -93,15 +116,18 @@ export function ProjectCard({ project }: ProjectCardProps) {
         )}
       </div>
 
-      <p className="text-dim text-sm text-pretty leading-relaxed mb-5">
-        {project.description}
+      <p className="text-[#aaa] text-sm text-pretty leading-relaxed mb-5 [&_strong]:text-primary/90 [&_strong]:font-semibold [&_b]:text-primary/90 [&_b]:font-semibold [&_em]:text-primary/80 [&_em]:italic [&_i]:text-primary/80 [&_i]:italic">
+        <FormattedText text={project.description} />
       </p>
 
       <ul className="space-y-1.5 mb-6" aria-label="Key features">
         {project.highlights.map((highlight) => (
-          <li key={highlight} className="flex items-start gap-2.5 text-[#777] text-[0.8125rem] leading-snug">
+          <li
+            key={highlight}
+            className="flex items-start gap-2.5 text-[#777] text-[0.8125rem] leading-snug [&_strong]:text-primary/90 [&_strong]:font-semibold [&_b]:text-primary/90 [&_b]:font-semibold [&_em]:text-primary/80 [&_em]:italic [&_i]:text-primary/80 [&_i]:italic"
+          >
             <span className="mt-[0.35em] size-1 rounded-full bg-accent/50 shrink-0" aria-hidden="true" />
-            {highlight}
+            <FormattedText text={highlight} />
           </li>
         ))}
       </ul>
