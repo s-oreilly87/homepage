@@ -219,7 +219,7 @@ export default function ScrollManager() {
         .map((el) => {
           const y = Math.round(getDocumentTop(el) - NAV_H);
 
-          let focusEl: HTMLElement | null = null;
+          let focusEl: HTMLElement | null;
           if (el.id.startsWith("snap-project-")) {
             const idx = parseInt(el.id.replace("snap-project-", ""));
             if (idx === 0) {
@@ -465,7 +465,8 @@ export default function ScrollManager() {
       // A new gesture begins after GESTURE_RESET ms of silence.
       // We track the running maximum delta so we can identify when the tail
       // of a gesture is arriving (delta has fallen well below the peak).
-      if (now - lastGestureMs > GESTURE_RESET) gesturePeak = 0;
+      const isNewGesture = now - lastGestureMs > GESTURE_RESET;
+      if (isNewGesture) gesturePeak = 0;
       lastGestureMs = now;
       gesturePeak = Math.max(gesturePeak, absDelta);
 
@@ -478,8 +479,11 @@ export default function ScrollManager() {
       //   1. Already snapping to a target
       //   2. Momentum tail — decelerating roll-off / coast
       //   3. Sub-threshold — too small to constitute intentional navigation;
-      //      blocking keeps the page locked to its snap point between gestures
-      if (locked || isTail || absDelta < SNAP_THRESHOLD) {
+      //      blocking keeps the page locked to its snap point between gestures.
+      //      Exception: a fresh gesture (long pause before this event) is always
+      //      honoured — ensures a slow discrete mouse-wheel click always fires
+      //      even when its deltaY is below SNAP_THRESHOLD.
+      if (locked || isTail || (!isNewGesture && absDelta < SNAP_THRESHOLD)) {
         e.preventDefault();
         return;
       }
