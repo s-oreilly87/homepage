@@ -1,10 +1,10 @@
 import { TechLogo } from "@/components/TechLogo";
 
 const STACK: Record<string, string[]> = {
-  Frontend:      ["React", "Next.js", "TypeScript", "Vue.js", "Tailwind CSS", "Tanstack"],
-  Backend:       ["Laravel", "PHP", "Python", "FastAPI", "Java", "Spring Boot"],
+  Frontend:                 ["React", "Next.js", "TypeScript", "Vue.js", "Tailwind CSS", "Tanstack"],
+  Backend:                  ["Laravel", "PHP", "Python", "FastAPI", "Java", "Spring Boot"],
   "Database & Queues":      ["MySQL", "MariaDB", "PostgreSQL", "Redis", "Laravel Horizon"],
-  "DevOps & AI": ["Docker", "Claude API", "Laravel AI"],
+  "DevOps & AI":            ["Docker", "Claude API", "Laravel AI"],
 };
 
 export default function Stack() {
