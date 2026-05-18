@@ -17,6 +17,7 @@ import {
   siAnthropic,
   siInertia,
   siTanstack,
+  siMariadb,
   type SimpleIcon,
 } from "simple-icons";
 
@@ -31,6 +32,7 @@ const ICON_MAP: Record<string, SimpleIcon> = {
   Java:           siOpenjdk,
   "Spring Boot":  siSpringboot,
   MySQL:          siMysql,
+  MariaDB:        siMariadb,
   PostgreSQL:     siPostgresql,
   Redis:          siRedis,
   "Vue.js":       siVuedotjs,

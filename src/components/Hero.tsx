@@ -17,21 +17,21 @@ export default function Hero() {
 
       <div className="text-dim text-base text-pretty max-w-[50ch] space-y-3 mb-8">
         <p>
-          Senior full-stack engineer with over 4 years shipping production
+          <span className="text-primary">Senior full-stack engineer</span> with over 4 years shipping production
           software end-to-end. I've built internal platforms,
-          event-driven backend systems, and LLM{"\u2009"}/{"\u2009"}AI agent
-          pipelines — from ambiguous requirements through to production debugging.
+          <span className="text-primary">event-driven backend systems</span>, and <span className="text-primary">LLM{"\u2009"}/{"\u2009"}AI agent pipelines</span>   — from ambiguous requirements through to production debugging.
         </p>
         <p>
           Most recently at{" "}
           <span className="text-primary">Nettwerk Music Group</span> via
           Springloaded, building a unified platform in Laravel, React, and
-          TypeScript. Before that, ML-assisted tooling in Spring Boot and Vue.js at ATS Engineers.
-          Educational background in biochemistry and jazz.
+          TypeScript. Before that, ML-assisted tooling in Spring Boot and Vue.js
+          at <span className="text-primary">ATS Engineers. </span>
+          Educational background in biochemistry and jazz performance.
         </p>
       </div>
 
-      <p className="font-display text-[#666] text-[0.75rem] flex flex-wrap gap-4">
+      <p className="font-display text-[#888] text-[0.75rem] flex flex-wrap gap-4">
         <span>Remote · NYC</span>
         <span className="text-line" aria-hidden="true">·</span>
         <span>Open to full-time & contract</span>
