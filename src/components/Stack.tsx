@@ -1,11 +1,11 @@
 import { TechLogo } from "@/components/TechLogo";
 
-const STACK = [
-  "React", "Next.js", "TypeScript", "Vue.js", "Tailwind CSS", "Tanstack",
-  "Laravel", "Laravel AI", "PHP", "Python", "FastAPI", "Java", "Spring Boot",
-  "MySQL", "MariaDB", "PostgreSQL", "Redis", "Docker",
-  "Claude API",
-];
+const STACK: Record<string, string[]> = {
+  Frontend:      ["React", "Next.js", "TypeScript", "Vue.js", "Tailwind CSS", "Tanstack"],
+  Backend:       ["Laravel", "PHP", "Python", "FastAPI", "Java", "Spring Boot"],
+  "Database & Queues":      ["MySQL", "MariaDB", "PostgreSQL", "Redis", "Laravel Horizon"],
+  "DevOps & AI": ["Docker", "Claude API", "Laravel AI"],
+};
 
 export default function Stack() {
   return (
@@ -19,9 +19,16 @@ export default function Stack() {
         Recently hands-on with <span className="text-primary">LLM API integration</span> and AI agent workflows using MCP tooling in production.
       </p>
 
-      <div className="flex flex-wrap gap-2">
-        {STACK.map((name) => (
-          <TechLogo key={name} name={name} />
+      <div className="flex flex-col gap-6">
+        {Object.entries(STACK).map(([group, names]) => (
+          <div key={group}>
+            <p className="text-[0.6875rem] font-display text-dim/50 uppercase tracking-widest mb-2.5">{group}</p>
+            <div className="flex flex-wrap gap-2">
+              {names.map((name) => (
+                <TechLogo key={name} name={name} />
+              ))}
+            </div>
+          </div>
         ))}
       </div>
 
