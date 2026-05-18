@@ -253,9 +253,15 @@ export default function ScrollManager() {
     // ── Scroll animation ─────────────────────────────────────────────────
     // Uses the browser's compositor-threaded smooth scroll for visual quality,
     // with a polling loop to detect arrival reliably (scrollend is inconsistent).
-    function doScroll(target: number, focusEl?: HTMLElement | null) {
+    function doScroll(targetY: number, focusEl?: HTMLElement | null) {
       if (pollId !== null) cancelAnimationFrame(pollId);
       locked = true;
+
+      // Clamp to the actual max scrollable position so arrival detection works
+      // for snap points near the page bottom (e.g. a short footer section whose
+      // top offset exceeds scrollHeight - innerHeight).
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const target = Math.min(targetY, maxScroll);
 
       window.scrollTo({ top: target, behavior: "smooth" });
 
