@@ -53,7 +53,13 @@ export const projects: Project[] = [
     stack: ["FastAPI", "React", "Playwright", "ARQ / Redis"],
     status: "live",
     imagePalette: {from: "#060f07", via: "#0b1e0d", to: "#0e2811"},
-    images: ["/images/projects/hut-hunter-1.png", "/images/projects/hut-hunter-2.png", "/images/projects/hut-hunter-3.png", "/images/projects/hut-hunter-4.png"],
+    images: [
+      "/images/projects/hut-hunter-1.png",
+      "/images/projects/hut-hunter-2.png",
+      "/images/projects/hut-hunter-3.png",
+      "/images/projects/hut-hunter-4.png",
+      "/images/projects/hut-hunter-5.png",
+    ],
     href: "https://hut-hunter.seanoreilly.dev",
     github: "https://github.com/s-oreilly87/hut-hunter",
 
