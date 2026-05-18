@@ -1,11 +1,11 @@
 import { TechLogo } from "@/components/TechLogo";
 
-const STACK = [
-  "React", "Next.js", "TypeScript", "Vue.js", "Tailwind CSS", "Tanstack",
-  "Laravel", "PHP", "Python", "FastAPI", "Java", "Spring Boot",
-  "MySQL", "PostgreSQL", "Redis", "Docker",
-  "Claude API",
-];
+const STACK: Record<string, string[]> = {
+  Frontend:      ["React", "Next.js", "TypeScript", "Vue.js", "Tailwind CSS", "Tanstack"],
+  Backend:       ["Laravel", "PHP", "Python", "FastAPI", "Java", "Spring Boot"],
+  "Database & Queues":      ["MySQL", "MariaDB", "PostgreSQL", "Redis", "Laravel Horizon"],
+  "DevOps & AI": ["Docker", "Claude API", "Laravel AI"],
+};
 
 export default function Stack() {
   return (
@@ -14,14 +14,21 @@ export default function Stack() {
       <p tabIndex={0} className="section-label focus:outline-none focus-visible:text-accent transition-colors w-fit">Stack</p>
 
       <p className="text-dim text-base text-pretty max-w-[52ch] mb-8">
-        I'm strongest building with Laravel and React{"\u2009"}/{"\u2009"}Next.js. Also very comfortable in Java and
-        Python-based frameworks and Vue.js frontends. Recently hands-on with LLM API integration and
-        AI agent workflows using MCP tooling in production.
+        I'm strongest building with <span className="text-primary">Laravel</span> and <span className="text-primary">React{"\u2009"}/{"\u2009"}Next.js</span> with <span className="text-primary">Typescript</span>.
+        Also very comfortable in <span className="text-primary">Java</span> and<span className="text-primary"> Python</span> frameworks and <span className="text-primary">Vue.js</span> frontends.
+        Recently hands-on with <span className="text-primary">LLM API integration</span> and AI agent workflows using MCP tooling in production.
       </p>
 
-      <div className="flex flex-wrap gap-2">
-        {STACK.map((name) => (
-          <TechLogo key={name} name={name} />
+      <div className="flex flex-col gap-6">
+        {Object.entries(STACK).map(([group, names]) => (
+          <div key={group}>
+            <p className="text-[0.6875rem] font-display text-dim/50 uppercase tracking-widest mb-2.5">{group}</p>
+            <div className="flex flex-wrap gap-2">
+              {names.map((name) => (
+                <TechLogo key={name} name={name} />
+              ))}
+            </div>
+          </div>
         ))}
       </div>
 

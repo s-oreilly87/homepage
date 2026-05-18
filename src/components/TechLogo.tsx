@@ -17,7 +17,8 @@ import {
   siAnthropic,
   siInertia,
   siTanstack,
-  type SimpleIcon,
+  siMariadb,
+  type SimpleIcon, siLaravelhorizon,
 } from "simple-icons";
 
 const ICON_MAP: Record<string, SimpleIcon> = {
@@ -31,6 +32,7 @@ const ICON_MAP: Record<string, SimpleIcon> = {
   Java:           siOpenjdk,
   "Spring Boot":  siSpringboot,
   MySQL:          siMysql,
+  MariaDB:        siMariadb,
   PostgreSQL:     siPostgresql,
   Redis:          siRedis,
   "Vue.js":       siVuedotjs,
@@ -40,6 +42,7 @@ const ICON_MAP: Record<string, SimpleIcon> = {
   Anthropic:      siAnthropic,
   Inertia:        siInertia,
   Tanstack:       siTanstack,
+  "Laravel Horizon": siLaravelhorizon,
 };
 
 interface TechLogoProps {
