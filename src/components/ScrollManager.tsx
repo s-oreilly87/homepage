@@ -13,6 +13,7 @@ const SNAP_THRESHOLD = 35;   // min delta (px) to trigger a section snap
 const GESTURE_RESET  = 400;  // ms of silence that marks the start of a new gesture
 const TAIL_PEAK_MIN  = 50;   // only apply tail-detection if gesture peaked above this
 const TAIL_RATIO     = 0.3;  // events below (peak × ratio) are treated as momentum tail
+const CARD_BOUNDARY_CUSHION = 72; // extra wheel/touch px required before leaving card content
 
 /**
  * Mouse / fine-pointer scroll manager.
@@ -52,6 +53,119 @@ const TAIL_RATIO     = 0.3;  // events below (peak × ratio) are treated as mome
  */
 export default function ScrollManager() {
   useEffect(() => {
+    if (window.matchMedia("(pointer: fine)").matches) return;
+
+    let lastTouchY = 0;
+    let gestureDelta = 0;
+    let boundaryAccum = 0;
+    let boundaryDir = 0;
+    let boundaryScroller: HTMLElement | null = null;
+    let activeScroller: HTMLElement | null = null;
+
+    function getDocumentTop(el: HTMLElement) {
+      return el.getBoundingClientRect().top + window.scrollY;
+    }
+
+    function getProjectCardScroller(target: EventTarget | null) {
+      if (!(target instanceof Element)) return null;
+      return target.closest<HTMLElement>("[data-project-card-scroll]");
+    }
+
+    function canScrollCard(scroller: HTMLElement, delta: number) {
+      const maxScroll = scroller.scrollHeight - scroller.clientHeight;
+      if (maxScroll <= 1) return false;
+
+      if (delta > 0) return scroller.scrollTop < maxScroll - 1;
+      return scroller.scrollTop > 1;
+    }
+
+    function snapToAdjacent(delta: number) {
+      const sections = Array.from(document.querySelectorAll<HTMLElement>(".snap-section"));
+      const targets = sections
+        .map((el) => ({
+          y: Math.round(getDocumentTop(el) - NAV_H),
+          el,
+        }))
+        .filter(t => t.y >= 0)
+        .sort((a, b) => a.y - b.y);
+
+      const cur = window.scrollY;
+      const target = delta > 0
+        ? targets.find(t => t.y > cur + 10)
+        : [...targets].reverse().find(t => t.y < cur - 10);
+
+      if (!target) return false;
+
+      window.scrollTo({ top: target.y, behavior: "smooth" });
+      return true;
+    }
+
+    function resetBoundary(scroller: HTMLElement | null = null, dir = 0) {
+      boundaryAccum = 0;
+      boundaryScroller = scroller;
+      boundaryDir = dir;
+    }
+
+    function onTouchStart(e: TouchEvent) {
+      lastTouchY = e.touches[0]?.clientY ?? 0;
+      gestureDelta = 0;
+      activeScroller = getProjectCardScroller(e.target);
+      resetBoundary();
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      const touch = e.touches[0];
+      if (!touch) return;
+
+      const delta = lastTouchY - touch.clientY;
+      lastTouchY = touch.clientY;
+
+      if (Math.abs(delta) < 1) return;
+      gestureDelta = delta;
+
+      const scroller = activeScroller;
+      if (!scroller) {
+        resetBoundary();
+        return;
+      }
+
+      if (canScrollCard(scroller, delta)) {
+        resetBoundary(scroller, Math.sign(delta));
+        return;
+      }
+
+      const dir = Math.sign(delta);
+      if (boundaryScroller !== scroller || boundaryDir !== dir) {
+        resetBoundary(scroller, dir);
+      }
+
+      boundaryAccum += Math.abs(delta);
+    }
+
+    function onTouchEnd() {
+      if (boundaryAccum >= CARD_BOUNDARY_CUSHION && gestureDelta !== 0) {
+        snapToAdjacent(gestureDelta);
+      }
+
+      gestureDelta = 0;
+      activeScroller = null;
+      resetBoundary();
+    }
+
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     const html = document.documentElement;
@@ -65,6 +179,9 @@ export default function ScrollManager() {
     let pollId: number | null = null;
     let gesturePeak   = 0;   // largest abs-delta seen in the current gesture
     let lastGestureMs = 0;   // timestamp of the last wheel event
+    let boundaryAccum = 0;
+    let boundaryDir = 0;
+    let boundaryScroller: HTMLElement | null = null;
     interface SnapTarget {
       y: number;
       el: HTMLElement;
@@ -197,6 +314,22 @@ export default function ScrollManager() {
       return true;
     }
 
+    function resetBoundary(scroller: HTMLElement | null = null, dir = 0) {
+      boundaryAccum = 0;
+      boundaryScroller = scroller;
+      boundaryDir = dir;
+    }
+
+    function didPassBoundaryCushion(scroller: HTMLElement, delta: number) {
+      const dir = Math.sign(delta);
+      if (boundaryScroller !== scroller || boundaryDir !== dir) {
+        resetBoundary(scroller, dir);
+      }
+
+      boundaryAccum += Math.abs(delta);
+      return boundaryAccum >= CARD_BOUNDARY_CUSHION;
+    }
+
     // ── Keyboard handler ─────────────────────────────────────────────────
     function onKeyDown(e: KeyboardEvent) {
       // If we're already moving, block other scroll keys to prevent queueing/jank
@@ -279,12 +412,15 @@ export default function ScrollManager() {
       if (!locked && scroller && canScrollCard(scroller, delta)) {
         gesturePeak = 0;
         lastGestureMs = 0;
+        resetBoundary(scroller, Math.sign(delta));
         return;
       }
 
       if (!locked && scroller) {
         e.preventDefault();
-        snapToAdjacent(delta);
+        if (didPassBoundaryCushion(scroller, delta) && snapToAdjacent(delta)) {
+          resetBoundary();
+        }
         return;
       }
 
