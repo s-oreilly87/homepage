@@ -14,7 +14,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <article
       data-project-card-scroll
-      className="relative bg-surface border border-line rounded-2xl overflow-y-auto overscroll-contain group/card p-7 pt-6 transition-colors duration-300 max-h-[var(--project-card-max-height)]"
+      className="relative bg-surface border border-line rounded-2xl overflow-y-auto touch-pan-y group/card p-7 pt-6 transition-colors duration-300 max-h-[var(--project-card-max-height)]"
     >
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/35 to-transparent" />
       {project.images?.length ? (
