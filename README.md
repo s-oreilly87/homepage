@@ -1,4 +1,4 @@
-# Sean O'Reilly Homepage
+# Homepage and Portfolio Site
 
 Personal portfolio site for [seanoreilly.dev](https://seanoreilly.dev), built with Next.js, React, TypeScript, and Tailwind CSS.
 
