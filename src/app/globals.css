@@ -11,6 +11,9 @@
 :root {
   --font-dm-mono: ui-monospace;
   --font-geist:   system-ui;
+
+  /* Fixed nav height — keep in sync with Nav h-14 */
+  --nav-h: 56px;
 }
 
 /* ── Theme tokens ────────────────────────────── */
@@ -33,12 +36,20 @@
 *::after { box-sizing: border-box; }
 
 html {
-  scroll-behavior: smooth;
   color-scheme: dark;
-  /* Mandatory snap — every stop must be visited in sequence */
+  scroll-behavior: smooth;
+  /* Pure-CSS section snapping — every panel is exactly one viewport tall, so
+     mandatory snap stays smooth (no JS wheel-jacking required). Each panel
+     reserves the nav height internally, so panels snap to the very top. */
   scroll-snap-type: y mandatory;
-  /* Reserve space below fixed nav so snap targets land correctly */
-  scroll-padding-top: 56px;
+  scroll-padding-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
 }
 
 body {
@@ -61,10 +72,21 @@ a { text-decoration: none; color: inherit; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@utility animate-hero    { animation: fadeUp 1.6s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@utility animate-stack   { animation: fadeUp 1.6s 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@utility animate-projects{ animation: fadeUp 1.6s 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@utility animate-contact { animation: fadeUp 1.6s 1.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@utility animate-hero  { animation: fadeUp 1.6s 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@utility animate-panel { animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@keyframes scrollHint {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%      { transform: translateY(4px); opacity: 1; }
+}
+
+@utility animate-scroll-hint {
+  animation: scrollHint 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll-hint { animation: none; }
+}
 
 /* ── Section label — accent rule + mono caps ── */
 @utility section-label {
@@ -76,7 +98,7 @@ a { text-decoration: none; color: inherit; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-accent);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
 
   &::before {
     content: "";
@@ -89,11 +111,46 @@ a { text-decoration: none; color: inherit; }
   }
 }
 
-/* ── Section scroll snap ─────────────────────── */
-/* always = browser must stop here even on fast flicks */
-@utility snap-section {
+/* ── Section panels ──────────────────────────── */
+/* Each major section is one full-height snap panel. The nav height is reserved
+   inside the panel so it snaps cleanly to the top of the viewport, with the
+   section header pinned at the top and overflowing content scrolling within
+   `panel-body`. */
+@utility panel {
   scroll-snap-align: start;
   scroll-snap-stop: always;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--nav-h);
+}
+
+/* The internal scroll region of a panel — fills remaining height and scrolls
+   its own content. When it reaches a boundary, the SnapController takes over and
+   snaps the next panel in. */
+@utility panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+/* Fine-pointer (JS-controlled) snapping only: stop inner scrollers from chaining
+   into the window so the mouse wheel can't run past the first/last panel. The
+   `.snap-js` class is added by the SnapController for fine pointers. Touch never
+   gets it, so its native CSS snap keeps the scroll chaining it needs to navigate
+   between sections. */
+.snap-js .panel-body,
+.snap-js .card-scroll {
+  overscroll-behavior-y: contain;
 }
 
 /* ── Grain overlay ───────────────────────────── */

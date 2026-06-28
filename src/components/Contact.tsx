@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { siGithub } from "simple-icons";
 
 const EMAIL  = "sean@seanoreilly.dev";
 const GITHUB = "github.com/s-oreilly87";
 const LINKEDIN = "linkedin.com/in/sean-o-reilly-78815124a";
 
-export default function Contact() {
+export default function Contact({ children }: { children?: ReactNode }) {
   const [copied, setCopied] = useState(false);
 
   function handleEmailClick(e: React.MouseEvent<HTMLAnchorElement>) {
@@ -19,54 +20,63 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="animate-contact snap-section min-h-svh border-t-2 border-line flex flex-col justify-center pt-16 pb-30">
+    <section id="contact" className="panel">
+      <div className="pt-6 pb-2">
+        <p tabIndex={0} className="section-label focus:outline-none focus-visible:text-accent transition-colors w-fit">Contact</p>
+      </div>
 
-      <p tabIndex={0} className="section-label focus:outline-none focus-visible:text-accent transition-colors w-fit">Contact</p>
+      <div className="panel-body animate-panel flex flex-col">
+        <div className="pt-2">
+          <p className="text-base/7 sm:text-base text-dim text-pretty max-w-[38ch] mb-6">
+            Open to building ambitious projects and solving complex problems. Feel free to reach out.
+          </p>
 
-      <p className="text-dim text-base text-pretty max-w-[38ch] mb-6">
-        Open to building ambitious projects and solving complex problems. Feel free to reach out.
-      </p>
+          <div className="flex items-center flex-wrap gap-x-5 gap-y-3">
 
-      <div className="flex items-center flex-wrap gap-5">
+            <div className="flex items-center gap-2">
+              <a
+                href={`mailto:${EMAIL}`}
+                onClick={handleEmailClick}
+                className="flex items-center gap-2 font-display text-[0.875rem] sm:text-[0.8125rem] text-dim hover:text-accent transition-colors"
+              >
+                <MailIcon />
+                {EMAIL}
+              </a>
+              {copied && (
+                <span className="font-display text-[0.6875rem] text-accent">
+                  copied
+                </span>
+              )}
+            </div>
 
-        <div className="flex items-center gap-2">
-          <a
-            href={`mailto:${EMAIL}`}
-            onClick={handleEmailClick}
-            className="flex items-center gap-2 font-display text-[0.8125rem] text-dim hover:text-accent transition-colors"
-          >
-            <MailIcon />
-            {EMAIL}
-          </a>
-          {copied && (
-            <span className="font-display text-[0.6875rem] text-accent">
-              copied
-            </span>
-          )}
+            <span className="text-line max-sm:hidden" aria-hidden="true">·</span>
+
+            <a
+              href={`https://${GITHUB}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 font-display text-[0.875rem] sm:text-[0.8125rem] text-dim hover:text-accent transition-colors"
+            >
+              <GitHubIcon />
+              {GITHUB}
+            </a>
+
+            <span className="text-line max-sm:hidden" aria-hidden="true">·</span>
+
+            <a
+              href={`https://${LINKEDIN}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 font-display text-[0.875rem] sm:text-[0.8125rem] text-dim hover:text-accent transition-colors"
+            >
+              <LinkedInIcon />
+              {LINKEDIN}
+            </a>
+
+          </div>
         </div>
 
-        <span className="text-line" aria-hidden="true">·</span>
-
-        <a
-          href={`https://${GITHUB}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 font-display text-[0.8125rem] text-dim hover:text-accent transition-colors"
-        >
-          <GitHubIcon />
-          {GITHUB}
-        </a>
-
-        <a
-          href={`https://${LINKEDIN}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 font-display text-[0.8125rem] text-dim hover:text-accent transition-colors"
-        >
-          <LinkedInIcon />
-          {LINKEDIN}
-        </a>
-
+        {children}
       </div>
     </section>
   );
