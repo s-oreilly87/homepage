@@ -1,3 +1,5 @@
+"use client";
+
 import type { Project } from "@/lib/projects";
 import { TechLogo } from "@/components/TechLogo";
 import { GithubButton } from "@/components/GithubButton";
@@ -28,17 +30,27 @@ function FormattedText({ text }: { text: string }) {
   return <span dangerouslySetInnerHTML={{ __html: processed }} />;
 }
 
+type HeightMode = "auto" | "fill";
+
 interface ProjectCardProps {
   project: Project;
+  /**
+   * "auto" — natural height (normal flow).
+   * "fill" — fills its parent's height and scrolls its own content (carousel).
+   */
+  heightMode?: HeightMode;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, heightMode = "auto" }: ProjectCardProps) {
   const status = projectStatusStyles[project.status];
 
   return (
     <article
-      data-project-card-scroll
-      className="relative bg-surface border border-line rounded-2xl overflow-y-auto touch-pan-y group/card p-7 pt-6 transition-colors duration-300 max-h-[var(--project-card-max-height)]"
+      className={`relative bg-surface border border-line rounded-2xl group/card p-7 pt-6 transition-colors duration-300 ${
+        heightMode === "fill"
+          ? "card-scroll h-full overflow-y-auto touch-pan-y no-scrollbar"
+          : ""
+      }`}
     >
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/35 to-transparent" />
       {project.images?.length ? (
