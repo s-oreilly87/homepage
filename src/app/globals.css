@@ -143,16 +143,6 @@ a { text-decoration: none; color: inherit; }
   &::-webkit-scrollbar { display: none; }
 }
 
-/* Fine-pointer (JS-controlled) snapping only: stop inner scrollers from chaining
-   into the window so the mouse wheel can't run past the first/last panel. The
-   `.snap-js` class is added by the SnapController for fine pointers. Touch never
-   gets it, so its native CSS snap keeps the scroll chaining it needs to navigate
-   between sections. */
-.snap-js .panel-body,
-.snap-js .card-scroll {
-  overscroll-behavior-y: contain;
-}
-
 /* ── Grain overlay ───────────────────────────── */
 @utility grain-overlay {
   position: relative;

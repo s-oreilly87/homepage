@@ -3,71 +3,58 @@
 import { useEffect } from "react";
 
 /**
- * Lean section-snap controller for fine pointers (mouse / trackpad).
+ * Unified wheel-driven section snapping for fine pointers (mouse AND trackpad).
  *
- * Each section is a full-height `.panel`. We disable CSS snap for fine pointers
- * (so JS and CSS don't fight) and let coarse pointers (touch) keep native CSS
- * mandatory snap, which already feels good with momentum.
+ * A mouse wheel and a trackpad are indistinguishable per-event on modern browsers
+ * (Chrome reports a hi-res mouse exactly like a trackpad), so instead of guessing
+ * the device we treat ALL wheel input on a fine pointer the same way and own it
+ * completely: every wheel event is `preventDefault`-ed, so native scroll never
+ * runs — it can't overshoot the page bounds and can't fight our snap animation.
+ * Touch (a coarse pointer) is left to native CSS `scroll-snap` entirely, which is
+ * already perfect on mobile.
  *
- * Triggering model — one snap per deliberate *push*, detected by acceleration.
- * We track a decaying velocity envelope; a "push" is an event whose magnitude
- * spikes above that envelope (mag > env * ACCEL_RATIO + ACCEL_FLOOR), or the
- * first event after a quiet GESTURE_GAP. Crucially, the inertia of scrolling a
- * section to its bottom only ever *decelerates*, so it can never spike the
- * envelope — reaching the bottom never carries into a snap on the same gesture.
- * The next distinct flick/notch does spike, so it snaps right away (one push,
- * one section). A single push can't fire twice (its momentum tail decays), so
- * a flick can't double-jump two sections.
+ * One rule drives everything, keyed off the quiet GAP between events:
+ *   - A fresh gesture (preceded by >= GESTURE_GAP of quiet) acts on its first
+ *     event: if the current panel's inner content can scroll in that direction we
+ *     scroll it (applying the raw delta, so a trackpad keeps its momentum feel and
+ *     both devices get real feedback); otherwise we snap one section.
+ *   - Every later event of the same gesture (the trackpad momentum tail, or a fast
+ *     burst of notches) is swallowed until the next quiet gap. That makes one
+ *     flick / one deliberate notch advance exactly one section, with no double
+ *     jumps and no overshoot.
  *
- * After a snap the gesture is *locked*: every remaining event (the decaying
- * inertia tail) is swallowed until the next quiet gap, so a flick's momentum
- * can't bleed into scrolling the section it just landed on.
+ * `usedInner` keeps it to "at most two gestures per section": a CONTINUOUS gesture
+ * that scrolled content to its end won't also snap (wait for a fresh gesture),
+ * while DISCRETE scrolling — where each notch is its own gesture — snaps on the
+ * very first notch after the content bottom is reached.
  *
- * A separate IntersectionObserver (which runs for every pointer type, including
- * touch where native CSS snap handles movement) resets a section's nested
- * scrollers to the top once it leaves the viewport, so every section/card is
- * always re-entered from the start — and a section above is one push away.
- *
- * Leaving the Projects panel uses a "peek & confirm" gesture: the first push
- * past the carousel nudges the next section into view and snaps back, signalling
- * there's more below without yanking the user away from the other project cards.
- * A second deliberate push within the confirm window commits to the next panel.
+ * A scroll-idle pass (runs for every pointer type, including touch) resets a
+ * section's nested scrollers to the top once it leaves the viewport, so every
+ * section/card is always re-entered from the start.
  */
-const GESTURE_GAP = 110;  // ms of quiet that marks a fresh, intentional gesture
-const GAP_MIN = 8;        // px (normalized) of intent a gap-start needs to fire
-const ENV_HALFLIFE = 100; // ms half-life of the decaying velocity envelope
-const ACCEL_RATIO = 1.5;  // mag must exceed env * this (+ floor) to count as a push
-const ACCEL_FLOOR = 8;    // px floor so tiny ripples on a near-zero env don't fire
-const FLOOR = 4;          // px of intent needed to count as a scroll at all
-const ANIM_MS = 340;      // cooldown while a programmatic snap is in flight
-
-const PEEK_PX = 96;       // how far the next section is nudged into view
-const PEEK_HOLD = 460;    // ms the peek is held before snapping back
-const PEEK_WINDOW = 1500; // ms after a peek during which a 2nd push confirms
+const GESTURE_GAP = 110;     // ms of quiet that marks a fresh, intentional gesture
+const ANIM_MS = 340;         // duration of a programmatic snap animation
+const LINE_PX = 40;          // px per line for deltaMode === 1 (Firefox mouse)
+const REACCEL = 2.2;         // a push this many× the decaying tail = a new gesture
+const REACCEL_FLOOR = 10;    // px; ignore momentum bumps smaller than a real push
+const REVERSAL_FLOOR = 6;    // px; ignore the tiny opposite "settle" blip after momentum
 
 export default function SnapController() {
   useEffect(() => {
-    if (!window.matchMedia("(pointer: fine)").matches) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Touch (coarse) is left to native CSS snap — it's already perfect on mobile.
+    if (!window.matchMedia("(pointer: fine)").matches) return;
 
     const html = document.documentElement;
-    const prevSnapType = html.style.getPropertyValue("scroll-snap-type");
-    // !important guarantees we override the stylesheet's `y mandatory` so CSS and
-    // JS never fight (CSS snap would otherwise reintroduce the ~50%-screen feel).
-    html.style.setProperty("scroll-snap-type", "none", "important");
-    // Scopes `overscroll-behavior: contain` to inner scrollers for fine pointers
-    // only (see globals.css) — stops the wheel chaining past the first/last panel
-    // while leaving touch free to chain into native CSS snap.
-    html.classList.add("snap-js");
-
     let lastTs = 0;
     let animUntil = 0;
-    let env = 0;             // decaying velocity envelope (for acceleration detection)
-    let lockGesture = false; // true after a snap, until the gesture's next quiet gap
-
-    let peekActive = false;
-    let peekExpire = 0;
-    let peekTimers: number[] = [];
+    let rafId = 0;
+    let usedInner = false; // this gesture has scrolled inner content
+    let snapped = false;   // this gesture already snapped — swallow its tail
+    let lastDir = 0;       // direction of the previous event (for reversal detection)
+    let ema = 0;           // running magnitude baseline (px) — tracks the momentum tail
+    let peakMag = 0;       // peak magnitude of the current gesture
+    let decayed = false;   // the gesture's momentum has been observed decaying
 
     function getPanels(): HTMLElement[] {
       return Array.from(document.querySelectorAll<HTMLElement>(".panel"));
@@ -89,135 +76,153 @@ export default function SnapController() {
       return best;
     }
 
-    function clearPeek() {
-      peekActive = false;
-      peekTimers.forEach((t) => clearTimeout(t));
-      peekTimers = [];
+    // Animate the window to `to` ourselves (easeOutCubic). Two CSS features have
+    // to be suspended for the duration or the animation breaks:
+    //   - `scroll-snap-type: mandatory` — Firefox insta-snaps any programmatic
+    //     scroll to the nearest snap point, so it never animates.
+    //   - `scroll-behavior: smooth` — makes every per-frame scrollTo ALSO try to
+    //     smooth-animate, so the frames fight and stutter/jump.
+    // Input is blocked by animUntil meanwhile, so suspending them is safe; we
+    // restore both once we've landed exactly on the snap point.
+    function suspendCss() {
+      html.style.setProperty("scroll-snap-type", "none", "important");
+      html.style.setProperty("scroll-behavior", "auto", "important");
+    }
+    function restoreCss() {
+      html.style.removeProperty("scroll-snap-type");
+      html.style.removeProperty("scroll-behavior");
+    }
+    function animateScroll(to: number) {
+      cancelAnimationFrame(rafId);
+      const from = window.scrollY;
+      const dist = to - from;
+      suspendCss();
+      if (Math.abs(dist) < 1) {
+        restoreCss();
+        return;
+      }
+      const start = performance.now();
+      const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+      const step = (now: number) => {
+        const t = Math.min(1, (now - start) / ANIM_MS);
+        window.scrollTo(0, from + dist * ease(t));
+        if (t < 1) rafId = requestAnimationFrame(step);
+        else restoreCss();
+      };
+      rafId = requestAnimationFrame(step);
     }
 
     function snapTo(target: number, tops: number[]) {
       const clamped = Math.max(0, Math.min(tops.length - 1, target));
       const top = tops[clamped];
       if (top === undefined) return;
+      // Boundary no-op (already at first/last section): hard stop, nothing scrolls.
+      if (Math.abs(top - window.scrollY) < 1) return;
+      snapped = true; // swallow the rest of this gesture's inertia tail
       animUntil = performance.now() + ANIM_MS;
-      lockGesture = true; // swallow the rest of this gesture's inertia tail
-      window.scrollTo({ top, behavior: "smooth" });
+      animateScroll(top);
     }
 
-    function startPeek(top: number) {
-      clearPeek();
-      peekActive = true;
-      peekExpire = performance.now() + PEEK_WINDOW;
-      animUntil = performance.now() + PEEK_HOLD + 200;
-      window.scrollTo({ top: top + PEEK_PX, behavior: "smooth" });
-      peekTimers.push(
-        window.setTimeout(() => {
-          window.scrollTo({ top, behavior: "smooth" });
-        }, PEEK_HOLD),
-      );
-      peekTimers.push(
-        window.setTimeout(() => {
-          peekActive = false;
-        }, PEEK_WINDOW),
-      );
-    }
-
-    // Fast scroller lookup — no getComputedStyle in the wheel hot path (that was
-    // forcing a style recalc on every event and causing the jitter). The only
-    // vertical scrollers are tagged with these classes.
-    function innerScroller(start: EventTarget | null): HTMLElement | null {
-      const el = start instanceof Element ? start.closest<HTMLElement>(".panel-body, .card-scroll") : null;
-      return el && el.scrollHeight > el.clientHeight + 1 ? el : null;
-    }
     function canScroll(el: HTMLElement, dir: number) {
       if (dir > 0) return el.scrollTop < el.scrollHeight - el.clientHeight - 1;
       return el.scrollTop > 1;
+    }
+    // The visible, scrollable inner element of a panel — independent of where the
+    // mouse cursor is (a fast wheel never moves the pointer, so e.target can land
+    // on a neighbouring panel). For the Projects carousel this resolves to the
+    // active card; off-screen cards have their centres outside the viewport.
+    function activeInner(panel: HTMLElement | undefined): HTMLElement | null {
+      if (!panel) return null;
+      const vw = window.innerWidth;
+      const els = panel.querySelectorAll<HTMLElement>(".panel-body, .card-scroll");
+      for (const el of els) {
+        if (el.scrollHeight <= el.clientHeight + 1) continue;
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        if (r.width > 0 && r.height > 0 && cx > 0 && cx < vw) return el;
+      }
+      return null;
     }
 
     function onWheel(e: WheelEvent) {
       const dir = Math.sign(e.deltaY);
       if (dir === 0) return;
 
-      // We fully own the wheel for fine pointers: ALWAYS preventDefault, then
-      // drive every scroll manually with hard clamps. The browser never scrolls
-      // anything itself, so there is no native path that could run unbounded
-      // past a container's top/bottom (the bug that kept resurfacing whenever a
-      // `return` left one event un-prevented for some device's delta mode).
+      // We own every wheel event on a fine pointer: native never scrolls, so it
+      // can't overshoot the page bounds or fight the snap animation.
       e.preventDefault();
 
       const now = performance.now();
       const gap = now - lastTs;
       lastTs = now;
-      if (dir < 0) clearPeek();
 
-      // Normalize to px. Pixel-mode deltas (trackpad, modern mice) are 1:1;
-      // line/page deltas are scaled to a comparable, native-feeling distance.
+      // Mid-snap: swallow everything (momentum tail, extra notches) so the
+      // animation can't be jumped forward or double-snapped.
+      if (now < animUntil) return;
+
       const px =
         e.deltaMode === 1
-          ? e.deltaY * 40
+          ? e.deltaY * LINE_PX
           : e.deltaMode === 2
             ? e.deltaY * window.innerHeight
             : e.deltaY;
       const mag = Math.abs(px);
 
-      // Decay the velocity envelope toward zero over time, then test whether this
-      // event spikes above it — that's a fresh, deliberate push. Decaying inertia
-      // (scrolling to a bottom, or a flick's momentum tail) never spikes, so it
-      // can't trigger a snap. Update the envelope to the new peak afterwards.
-      env *= Math.pow(0.5, gap / ENV_HALFLIFE);
-      const accelerating = mag > env * ACCEL_RATIO + ACCEL_FLOOR;
-      env = Math.max(env, mag);
+      // Detect a FRESH, intentional gesture instead of waiting for all momentum to
+      // die (which is what made flipping back-and-forth feel unresponsive). Any of:
+      //   - a quiet gap (clean pause / deliberate discrete scroll),
+      //   - a direction reversal (momentum never reverses → always intentional),
+      //   - a re-acceleration: a spike above the decaying tail baseline (ema) once
+      //     the tail has actually started decaying, so a new flick registers before
+      //     the previous momentum fully fades — without the initial ramp of one
+      //     flick re-triggering itself.
+      const reversal = lastDir !== 0 && dir !== lastDir && mag > REVERSAL_FLOOR;
+      const reaccel = decayed && mag > REACCEL_FLOOR && mag > ema * REACCEL;
+      const fresh = gap >= GESTURE_GAP || reversal || reaccel;
 
-      // A quiet gap ends the previous gesture (and its post-snap lock).
-      if (gap >= GESTURE_GAP) lockGesture = false;
-
-      // A programmatic snap / peek is in flight — absorb the gesture + its tail.
-      if (now < animUntil) return;
-
-      // Is this event a fresh, intentional push (vs. a decaying inertia tail)?
-      const fresh =
-        (gap >= GESTURE_GAP && mag >= GAP_MIN) || // flick start / isolated notch
-        accelerating;                             // a deliberate re-push / wheel notch
-
-      // Inner content scrolling takes precedence over snapping while the content
-      // can still move. We move it manually and clamp hard to [0, max] — a
-      // post-snap inertia tail is swallowed so a flick's momentum can't bleed
-      // into scrolling the section it just landed on.
-      const inner = innerScroller(e.target);
-      if (inner) {
-        const max = inner.scrollHeight - inner.clientHeight;
-        const canMove = dir > 0 ? inner.scrollTop < max - 1 : inner.scrollTop > 1;
-        if (canMove) {
-          if (lockGesture && !fresh) return;
-          const next = inner.scrollTop + px;
-          inner.scrollTop = next < 0 ? 0 : next > max ? max : next;
-          return;
-        }
+      if (fresh) {
+        ema = mag;
+        peakMag = mag;
+        decayed = false;
+      } else {
+        peakMag = Math.max(peakMag, mag);
+        if (mag < peakMag * 0.6) decayed = true;
+        ema = ema * 0.7 + mag * 0.3;
       }
+      lastDir = dir;
 
-      if (mag < FLOOR) return;
-
-      // Snap only on a fresh, deliberate push. At a content boundary this means
-      // the gesture that scrolled to the bottom (and its momentum) is ignored —
-      // only the next distinct push snaps. On an open section it's the same test,
-      // so momentum can't blow through several short sections at once.
-      if (!fresh) return;
+      if (fresh) {
+        usedInner = false;
+        snapped = false;
+      }
+      // Still the previous gesture's momentum tail — swallow it.
+      if (snapped) return;
 
       const panels = getPanels();
       const tops = topsOf(panels);
       const ci = currentIndex(tops);
-      const projectsIndex = panels.findIndex((p) => p.id === "projects");
 
-      // Peek & confirm when leaving the Projects panel downward.
-      if (dir > 0 && ci === projectsIndex && ci < tops.length - 1) {
-        if (peekActive && now <= peekExpire) {
-          clearPeek();
-          snapTo(ci + 1, tops);
-        } else {
-          startPeek(tops[ci]);
+      // Scroll the current panel's visible inner scroller while it can move (not
+      // the element under the cursor — a fast wheel never moves the pointer; see
+      // activeInner). Applying the raw delta keeps a trackpad's momentum feel and
+      // gives both devices real partial-scroll feedback.
+      const inner = activeInner(panels[ci]);
+      if (inner) {
+        const max = inner.scrollHeight - inner.clientHeight;
+        const canMove = dir > 0 ? inner.scrollTop < max - 1 : inner.scrollTop > 1;
+        if (canMove) {
+          const next = inner.scrollTop + px;
+          inner.scrollTop = next < 0 ? 0 : next > max ? max : next;
+          usedInner = true; // a continuous gesture can't also snap; a fresh one can
+          return;
         }
-        return;
       }
+
+      // At a content boundary, or a panel with no inner scroll. A CONTINUOUS
+      // gesture that just scrolled content to its end must not also snap — wait
+      // for a fresh gesture. DISCRETE scrolling resets usedInner on every gap, so
+      // the first notch after the bottom snaps immediately.
+      if (usedInner) return;
 
       snapTo(ci + dir, tops);
     }
@@ -250,12 +255,11 @@ export default function SnapController() {
       else if (e.key === "End") next = tops.length - 1;
 
       const dir = next > ci ? 1 : -1;
-      const inner = innerScroller(active);
+      const inner = activeInner(panels[ci]);
       if (inner && canScroll(inner, dir)) return;
 
       if (next !== ci) {
         e.preventDefault();
-        clearPeek();
         snapTo(next, tops);
       }
     }
@@ -264,12 +268,10 @@ export default function SnapController() {
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
-      if (prevSnapType) html.style.setProperty("scroll-snap-type", prevSnapType);
-      else html.style.removeProperty("scroll-snap-type");
-      html.classList.remove("snap-js");
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKeyDown);
-      clearPeek();
+      cancelAnimationFrame(rafId);
+      restoreCss();
     };
   }, []);
 
