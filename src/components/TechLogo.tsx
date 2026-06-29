@@ -78,13 +78,13 @@ export function TechLogo({
     return (
       <span className="inline-flex items-center gap-1.5 text-dim">
         {svgEl}
-        {showLabel && <span className="font-display text-[0.6875rem]">{name}</span>}
+        {showLabel && <span className="font-display text-[0.75rem] sm:text-[0.6875rem]">{name}</span>}
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 font-display text-[0.6875rem] text-dim hover:text-primary hover:border-line/60 transition-colors duration-200 bg-surface border border-line rounded-md px-2.5 py-1.5 cursor-default">
+    <span className="inline-flex items-center gap-1.5 font-display text-[0.75rem] sm:text-[0.6875rem] text-dim hover:text-primary hover:border-line/60 transition-colors duration-200 bg-surface border border-line rounded-md px-2.5 py-2 sm:py-1.5 cursor-default">
       {svgEl}
       {showLabel && name}
     </span>

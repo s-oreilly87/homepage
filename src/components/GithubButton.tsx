@@ -22,7 +22,7 @@ export function GithubButton({
       rel="noopener noreferrer"
       aria-label={ariaLabel}
       onClick={onClick}
-      className="flex items-center gap-1.5 px-3 h-9 rounded-md text-[#555] hover:text-primary hover:bg-white/5 transition-colors"
+      className="flex items-center gap-1.5 px-3 h-9 rounded-md text-faint hover:text-primary hover:bg-white/5 transition-colors"
     >
       {showLabel && (
         <span className="text-[12px] font-medium tracking-wide uppercase mt-0.5">GitHub</span>

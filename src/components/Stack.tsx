@@ -25,7 +25,7 @@ export default function Stack() {
         <div className="flex flex-col gap-6">
           {Object.entries(STACK).map(([group, names]) => (
             <div key={group}>
-              <p className="text-[0.6875rem] font-display text-dim/50 uppercase tracking-widest mb-2.5">{group}</p>
+              <p className="text-[0.6875rem] font-display text-faint uppercase tracking-widest mb-2.5">{group}</p>
               <div className="flex flex-wrap gap-2">
                 {names.map((name) => (
                   <TechLogo key={name} name={name} />

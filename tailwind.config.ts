@@ -13,7 +13,8 @@ const config: Config = {
         surface: "#111111",
         border: "#1E1E1E",
         text: "#F0F0F0",
-        muted: "#888888",
+        muted: "#A6A6A6",
+        faint: "#808080",
         accent: "#fb923c",
       },
       fontFamily: {

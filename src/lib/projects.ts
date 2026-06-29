@@ -13,6 +13,8 @@ export interface Project {
   stack: string[];
   status: ProjectStatus;
   href?: string;
+  /** When true, the title link is flagged as a live demo (shows a "Demo" label). */
+  demo?: boolean;
   github?: string;
   site?: string;
   imagePalette: { from: string; via: string; to: string };
@@ -38,6 +40,7 @@ export const projects: Project[] = [
     images: ["/images/projects/htpc-remote-1.png", "/images/projects/htpc-remote-2.png", "/images/projects/htpc-remote-3.png"],
     github: "https://github.com/s-oreilly87/htpc-remote",
     href: "https://htpc-remote.seanoreilly.dev",
+    demo: true,
 
   },
   {

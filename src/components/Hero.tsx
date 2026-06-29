@@ -6,7 +6,7 @@ export default function Hero() {
       <div className="panel-body flex flex-col">
         <div className="animate-hero my-auto pt-6 pb-10">
       <p className="font-display text-[0.6875rem] tracking-widest uppercase mb-10 flex items-center gap-3">
-        <span className="text-[#444]">01</span>
+        <span className="text-faint">01</span>
         <span className="inline-block size-1.5 rounded-full bg-accent shrink-0" aria-hidden="true" />
         <span className="text-accent">Full-Stack Engineer</span>
       </p>
@@ -35,7 +35,7 @@ export default function Hero() {
         </p>
       </div>
 
-      <p className="font-display text-[#888] text-[0.75rem] flex flex-wrap gap-4">
+      <p className="font-display text-dim text-[0.8125rem] sm:text-[0.75rem] flex flex-wrap gap-4">
         <span>Remote · NYC</span>
         <span className="text-line" aria-hidden="true">·</span>
         <span>Open to full-time & contract</span>

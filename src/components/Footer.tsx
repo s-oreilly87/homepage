@@ -14,7 +14,7 @@ export default function Footer() {
   return (
     <footer id="footer" className="mt-auto shrink-0 pt-10 pb-4 flex flex-col items-center gap-8 border-t border-line">
       <div className="flex flex-col items-center gap-4 pt-2">
-        <span className="text-[#444] text-[0.625rem] font-display uppercase tracking-[0.2em]">Built with</span>
+        <span className="text-faint text-[0.625rem] font-display uppercase tracking-[0.2em]">Built with</span>
         <div className="flex flex-wrap justify-center gap-2 px-6">
           <TechLogo name="Next.js" size={12} />
           <TechLogo name="React" size={12} />
@@ -38,7 +38,7 @@ export default function Footer() {
             <path d="m18 15-6-6-6 6"/>
           </svg>
         </div>
-        <span className="font-display text-[0.625rem] tracking-[0.2em] uppercase text-[#555] group-hover:text-accent group-focus-visible:text-accent transition-colors">Back to top</span>
+        <span className="font-display text-[0.625rem] tracking-[0.2em] uppercase text-faint group-hover:text-accent group-focus-visible:text-accent transition-colors">Back to top</span>
       </button>
     </footer>
   );

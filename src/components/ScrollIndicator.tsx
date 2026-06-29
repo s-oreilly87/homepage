@@ -14,8 +14,9 @@ export function ScrollIndicator({ targetId, label }: { targetId: string; label?:
         type="button"
         onClick={handleClick}
         aria-label={label ? `Scroll to ${label}` : "Scroll to next section"}
-        className="group flex h-6 w-12 items-center justify-center text-dim/45 transition-colors hover:text-accent focus:outline-none focus-visible:text-accent"
+        className="group relative flex h-6 w-12 items-center justify-center text-dim/60 transition-colors hover:text-accent focus:outline-none focus-visible:text-accent"
       >
+        <span className="absolute top-1/2 left-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden" aria-hidden="true" />
         <svg
           width="20"
           height="20"

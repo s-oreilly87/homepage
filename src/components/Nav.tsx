@@ -90,7 +90,7 @@ export default function Nav() {
               onClick={() => scrollTo(id)}
               className={[
                 "relative font-display text-[0.6875rem] tracking-wide transition-colors duration-200",
-                isActive ? "text-primary" : "text-[#666] hover:text-dim",
+                isActive ? "text-primary" : "text-faint hover:text-primary",
               ].join(" ")}
               aria-current={isActive ? "true" : undefined}
             >
@@ -115,6 +115,7 @@ export default function Nav() {
         aria-controls="mobile-menu"
         className="relative -mr-2 flex size-10 items-center justify-center text-dim hover:text-primary transition-colors sm:hidden focus:outline-none focus-visible:text-accent"
       >
+        <span className="absolute top-1/2 left-1/2 size-[max(100%,3rem)] -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden" aria-hidden="true" />
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
           {menuOpen ? (
             <>
