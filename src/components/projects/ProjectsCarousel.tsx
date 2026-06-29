@@ -145,7 +145,7 @@ export function ProjectsCarousel() {
                 role="tab"
                 aria-selected={active}
                 onClick={() => goTo(i)}
-                className={`group flex shrink-0 items-center gap-2 rounded-lg border px-3 py-2 sm:py-1.5 transition-colors ${
+                className={`group flex shrink-0 items-center gap-2 rounded-lg border px-3 py-2 transition-colors sm:py-1.5 ${
                   active ? "border-accent/50 bg-accent/10" : "border-line hover:border-dim/40"
                 }`}
               >
@@ -157,7 +157,7 @@ export function ProjectsCarousel() {
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span
-                  className={`whitespace-nowrap text-[0.8125rem] sm:text-[0.75rem] ${
+                  className={`text-[0.8125rem] whitespace-nowrap sm:text-[0.75rem] ${
                     active ? "text-primary" : "text-dim group-hover:text-primary"
                   }`}
                 >
@@ -202,9 +202,9 @@ function NavButton({
     <button
       onClick={onClick}
       aria-label={isPrev ? "Previous project" : "Next project"}
-      className="group relative flex size-11 sm:size-9 shrink-0 items-center justify-center rounded-full border border-line text-dim transition-colors hover:border-accent/50 hover:bg-accent/5 hover:text-accent focus-visible:border-accent focus-visible:text-accent focus:outline-none"
+      className="group relative flex size-11 shrink-0 items-center justify-center rounded-full border border-line text-dim transition-colors hover:border-accent/50 hover:bg-accent/5 hover:text-accent focus:outline-none focus-visible:border-accent focus-visible:text-accent sm:size-9"
     >
-      <span className="absolute top-1/2 left-1/2 size-12 -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden" aria-hidden="true" />
+      <span className="absolute top-1/2 left-1/2 size-12 -translate-1/2 pointer-fine:hidden" aria-hidden="true" />
       <svg
         width="18"
         height="18"

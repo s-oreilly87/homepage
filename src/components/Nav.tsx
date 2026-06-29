@@ -66,7 +66,7 @@ export default function Nav() {
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-50 h-14 flex items-center justify-between px-6"
+      className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between px-6"
       style={{
         background: "rgba(10,10,10,0.75)",
         backdropFilter: "blur(12px)",
@@ -77,11 +77,11 @@ export default function Nav() {
       <button
         id="nav-logo"
         onClick={() => scrollTo("hero")}
-        className="font-display text-[0.6875rem] tracking-widest text-accent hover:text-primary transition-colors duration-200 uppercase"
+        className="font-display text-[0.6875rem] tracking-widest text-accent uppercase transition-colors duration-200 hover:text-primary"
       >Sean O&apos;Reilly</button>
 
       {/* Desktop / tablet inline nav */}
-      <nav className="hidden sm:flex items-center gap-7" aria-label="Page sections">
+      <nav className="hidden items-center gap-7 sm:flex" aria-label="Page sections">
         {NAV_LINKS.map(({ label, id }) => {
           const isActive = active === id;
           return (
@@ -97,7 +97,7 @@ export default function Nav() {
               {label}
               {isActive && (
                 <span
-                  className="absolute -bottom-1 left-1/2 -translate-x-1/2 size-1 rounded-full bg-accent"
+                  className="absolute -bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-accent"
                   aria-hidden="true"
                 />
               )}
@@ -113,9 +113,9 @@ export default function Nav() {
         aria-label={menuOpen ? "Close menu" : "Open menu"}
         aria-expanded={menuOpen}
         aria-controls="mobile-menu"
-        className="relative -mr-2 flex size-10 items-center justify-center text-dim hover:text-primary transition-colors sm:hidden focus:outline-none focus-visible:text-accent"
+        className="relative -mr-2 flex size-10 items-center justify-center text-dim transition-colors hover:text-primary focus:outline-none focus-visible:text-accent sm:hidden"
       >
-        <span className="absolute top-1/2 left-1/2 size-[max(100%,3rem)] -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden" aria-hidden="true" />
+        <span className="absolute top-1/2 left-1/2 size-[max(100%,3rem)] -translate-1/2 pointer-fine:hidden" aria-hidden="true" />
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
           {menuOpen ? (
             <>
