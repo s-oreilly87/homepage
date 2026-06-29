@@ -47,7 +47,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
   return (
     <>
       <div
-        className="relative mb-6 group z-10 focus:outline-none"
+        className="group relative z-10 mb-6 focus:outline-none"
         tabIndex={0}
         onKeyDown={handleKeyDown}
         aria-label={`Image carousel for ${alt}. Use arrow keys to navigate.`}
@@ -58,7 +58,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
             event.stopPropagation();
             setShowModal(true);
           }}
-          className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-line/50 cursor-zoom-in"
+          className="relative aspect-video w-full cursor-zoom-in overflow-hidden rounded-xl border border-line/50 bg-black"
         >
           {images.map((src, i) => (
             <div
@@ -79,7 +79,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
           ))}
 
           {images.length > 1 && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
               {images.map((src, i) => (
                 <div
                   key={src}
@@ -97,7 +97,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
             <button
               onClick={prev}
               tabIndex={-1}
-              className="absolute left-0 -translate-x-1/2 top-1/2 -translate-y-1/2 z-10 size-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/15 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent/50 outline-none"
+              className="absolute top-1/2 left-0 z-10 flex size-8 -translate-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white opacity-100 backdrop-blur-md transition-all outline-none hover:bg-black/60 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent/50 md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
               aria-label="Previous image"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -107,7 +107,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
             <button
               onClick={next}
               tabIndex={-1}
-              className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 z-10 size-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/15 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent/50 outline-none"
+              className="absolute top-1/2 right-0 z-10 flex size-8 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white opacity-100 backdrop-blur-md transition-all outline-none hover:bg-black/60 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent/50 md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
               aria-label="Next image"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

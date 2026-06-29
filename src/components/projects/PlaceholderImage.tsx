@@ -7,7 +7,7 @@ interface PlaceholderImageProps {
 export function PlaceholderImage({ palette }: PlaceholderImageProps) {
   return (
     <div
-      className="relative w-full rounded-xl overflow-hidden mb-6 aspect-video"
+      className="relative mb-6 aspect-video w-full overflow-hidden rounded-xl"
       style={{
         background: `linear-gradient(145deg, ${palette.from} 0%, ${palette.via} 55%, ${palette.to} 100%)`,
       }}
@@ -28,7 +28,7 @@ export function PlaceholderImage({ palette }: PlaceholderImageProps) {
         }}
         aria-hidden="true"
       />
-      <span className="absolute bottom-3 right-3.5 font-display text-[0.5rem] tracking-widest uppercase text-white/15 select-none">
+      <span className="absolute right-3.5 bottom-3 font-display text-[0.5rem] tracking-widest text-white/15 uppercase select-none">
         Screenshot TBC
       </span>
     </div>
