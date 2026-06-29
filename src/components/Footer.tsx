@@ -3,6 +3,7 @@
 import type { MouseEvent } from "react";
 import { TechLogo } from "./TechLogo";
 import { GithubButton } from "./GithubButton";
+import { Chevron } from "@/components/icons";
 
 export default function Footer() {
   const scrollToTop = (event: MouseEvent) => {
@@ -34,9 +35,12 @@ export default function Footer() {
         aria-label="Back to top"
       >
         <div className="flex size-10 items-center justify-center rounded-full border border-line transition-all duration-300 group-hover:border-accent/50 group-hover:bg-accent/5 group-focus-visible:border-accent group-focus-visible:bg-accent/5">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:-translate-y-0.5 group-focus-visible:-translate-y-0.5">
-            <path d="m18 15-6-6-6 6"/>
-          </svg>
+          <Chevron
+            direction="up"
+            size={18}
+            strokeWidth={1.5}
+            className="transition-transform duration-300 group-hover:-translate-y-0.5 group-focus-visible:-translate-y-0.5"
+          />
         </div>
         <span className="font-display text-[0.625rem] tracking-[0.2em] text-faint uppercase transition-colors group-hover:text-accent group-focus-visible:text-accent">Back to top</span>
       </button>

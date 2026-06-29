@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
+import { Chevron, CloseIcon } from "@/components/icons";
 
 interface ImageModalProps {
   src: string;
@@ -49,9 +50,7 @@ export function ImageModal({
         className="absolute top-6 right-6 z-50 flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white"
         aria-label="Close modal"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 6L6 18M6 6l12 12" />
-        </svg>
+        <CloseIcon size={24} />
       </button>
 
       {hasMultiple && (
@@ -64,9 +63,7 @@ export function ImageModal({
             className="absolute top-1/2 left-4 z-50 flex size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 backdrop-blur-md transition-all hover:bg-white/10 hover:text-white md:left-8"
             aria-label="Previous image"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m15 18-6-6 6-6" />
-            </svg>
+            <Chevron direction="left" size={24} strokeWidth={2.5} />
           </button>
           <button
             onClick={(event) => {
@@ -76,9 +73,7 @@ export function ImageModal({
             className="absolute top-1/2 right-4 z-50 flex size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 backdrop-blur-md transition-all hover:bg-white/10 hover:text-white md:right-8"
             aria-label="Next image"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m9 18 6-6-6-6" />
-            </svg>
+            <Chevron direction="right" size={24} strokeWidth={2.5} />
           </button>
         </>
       )}

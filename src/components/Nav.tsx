@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { TapTarget } from "@/components/TapTarget";
+import { scrollToSection } from "@/lib/scroll";
 
 const NAV_LINKS = [
   { label: "Stack",    id: "stack" },
@@ -56,12 +58,7 @@ export default function Nav() {
 
   function scrollTo(id: string) {
     setMenuOpen(false);
-    const target = document.getElementById(id);
-    if (!target) return;
-
-    // Panels reserve the nav height internally and snap to their own top.
-    const top = target.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({ top: Math.max(0, Math.round(top)), behavior: "smooth" });
+    scrollToSection(id);
   }
 
   return (
@@ -115,7 +112,7 @@ export default function Nav() {
         aria-controls="mobile-menu"
         className="relative -mr-2 flex size-10 items-center justify-center text-dim transition-colors hover:text-primary focus:outline-none focus-visible:text-accent sm:hidden"
       >
-        <span className="absolute top-1/2 left-1/2 size-[max(100%,3rem)] -translate-1/2 pointer-fine:hidden" aria-hidden="true" />
+        <TapTarget className="size-[max(100%,3rem)]" />
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
           {menuOpen ? (
             <>
