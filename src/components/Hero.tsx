@@ -22,16 +22,16 @@ export default function Hero() {
           <div className="mb-8 max-w-[50ch] space-y-3 text-base text-pretty text-dim">
             <p>
               <span className="text-primary">Senior full-stack engineer</span> with over 4 years shipping production
-              software end-to-end. I've built internal platforms,
-              <span className="text-primary">event-driven backend systems</span>, and <span className="text-primary">LLM{"\u2009"}/{"\u2009"}AI agent pipelines</span>   — from ambiguous requirements through to production debugging.
+              software end to end. I've built internal platforms,{" "}
+              <span className="text-primary">event-driven backend systems</span>, and <span className="text-primary">LLM{"\u2009"}/{"\u2009"}AI agent pipelines</span>, owning each one from ambiguous requirements through to production debugging.
             </p>
             <p>
               Most recently at{" "}
-              <span className="text-primary">Nettwerk Music Group</span> via
+              <span className="text-primary">Nettwerk Music Group</span> through
               Springloaded, building a unified platform in Laravel, React, and
               TypeScript. Before that, ML-assisted tooling in Spring Boot and Vue.js
-              at <span className="text-primary">ATS Engineers. </span>
-              Educational background in biochemistry and jazz performance.
+              at <span className="text-primary">ATS Engineers.</span>{" "}
+              Academic background in biochemistry and jazz performance, which is a roundabout way of saying I like learning hard things and seeing them through.
             </p>
           </div>
 
