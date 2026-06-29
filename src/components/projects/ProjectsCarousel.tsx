@@ -179,7 +179,7 @@ export function ProjectsCarousel() {
         {projects.map((project, i) => (
           <div
             key={project.title}
-            className="w-full shrink-0 snap-center px-px"
+            className="relative min-h-0 w-full shrink-0 snap-center"
             aria-hidden={i !== index}
           >
             <ProjectCard project={project} heightMode="fill" />

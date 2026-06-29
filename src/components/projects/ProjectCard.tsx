@@ -46,10 +46,15 @@ export function ProjectCard({ project, heightMode = "auto" }: ProjectCardProps) 
 
   return (
     <article
-      className={`relative bg-surface border border-line rounded-2xl group/card p-7 pt-6 transition-colors duration-300 ${
+      className={`bg-surface border border-line rounded-2xl group/card p-7 pt-6 transition-colors duration-300 ${
         heightMode === "fill"
-          ? "card-scroll h-full overflow-y-auto touch-pan-y no-scrollbar"
-          : ""
+          ? // Fill the (positioned) wrapper absolutely so the scroll container has a
+            // DEFINITE height. A flex-1 height here collapses to content height in
+            // Chrome/Firefox (so it never overflows/scrolls) until a relayout is
+            // forced — which is why it only worked with DevTools open. Safari was
+            // fine either way. Absolute inset sidesteps the flex min-height trap.
+            "card-scroll absolute inset-y-0 inset-x-px overflow-y-auto touch-pan-y no-scrollbar"
+          : "relative"
       }`}
     >
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/35 to-transparent" />
