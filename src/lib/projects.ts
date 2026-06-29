@@ -1,10 +1,4 @@
-export type ProjectStatus =
-  | "in-progress"
-  | "polish"
-  | "to-build"
-  | "private"
-  | "coming-soon"
-  | "live";
+export type ProjectStatus = "live" | "in-progress" | "coming-soon";
 
 export interface Project {
   title: string;

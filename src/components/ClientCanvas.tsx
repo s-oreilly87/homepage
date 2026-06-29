@@ -2,11 +2,21 @@
 
 import { NeuroNoise } from "@paper-design/shaders-react";
 import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 
-// Blur applied directly to the element — not backdrop-filter.
-// backdrop-filter composites with the HDR display pipeline and causes banding.
-// filter: blur() operates on the element before compositing — no banding.
-// scale(1.06) hides the soft edge artifacts that gaussian blur creates at boundaries.
+const RADIAL_MASK =
+  "radial-gradient(circle at center, black var(--bg-radial-percent), transparent calc(var(--bg-radial-percent) + 25%))";
+
+/**
+ * Animated shader backdrop, revealed on mount by expanding a radial mask
+ * (--bg-radial-percent) from the centre outward.
+ *
+ * The shader's blur is applied as `filter: blur()` on the element itself rather
+ * than `backdrop-filter`: a backdrop filter composites against the HDR display
+ * pipeline and visibly bands on the near-black background, whereas an element
+ * filter runs before compositing and stays clean. `scale(1.3)` overscans the
+ * canvas so the blur's soft edges fall outside the viewport.
+ */
 export default function ClientCanvas() {
   const [mounted, setMounted] = useState(false);
 
@@ -14,20 +24,20 @@ export default function ClientCanvas() {
     setMounted(true);
   }, []);
 
+  const containerStyle = {
+    opacity: mounted ? 1 : 0,
+    WebkitMaskImage: RADIAL_MASK,
+    maskImage: RADIAL_MASK,
+    "--bg-radial-percent": mounted ? "150%" : "0%",
+    transition: "opacity 3s ease-in-out, --bg-radial-percent 3s ease-in-out",
+    position: "fixed",
+    inset: 0,
+    zIndex: 0,
+    pointerEvents: "none",
+  } as CSSProperties;
+
   return (
-    <div
-      style={{
-        opacity: mounted ? 1 : 0,
-        WebkitMaskImage: `radial-gradient(circle at center, black var(--bg-radial-percent), transparent calc(var(--bg-radial-percent) + 25%))`,
-        maskImage: `radial-gradient(circle at center, black var(--bg-radial-percent), transparent calc(var(--bg-radial-percent) + 25%))`,
-        ["--bg-radial-percent" as any]: mounted ? "150%" : "0%",
-        transition: "opacity 3s ease-in-out, --bg-radial-percent 3s ease-in-out",
-        position: "fixed",
-        inset: 0,
-        zIndex: 0,
-        pointerEvents: "none",
-      }}
-    >
+    <div style={containerStyle}>
       <NeuroNoise
         colorBack="#0a0a0a"
         colorMid="#431407"

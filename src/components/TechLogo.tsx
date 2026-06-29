@@ -18,7 +18,8 @@ import {
   siInertia,
   siTanstack,
   siMariadb,
-  type SimpleIcon, siLaravelhorizon,
+  siLaravelhorizon,
+  type SimpleIcon,
 } from "simple-icons";
 
 const ICON_MAP: Record<string, SimpleIcon> = {
