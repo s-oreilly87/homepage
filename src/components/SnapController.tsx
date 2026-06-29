@@ -46,6 +46,15 @@ export default function SnapController() {
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     const html = document.documentElement;
+    // The JS engine owns ALL snapping on a fine pointer, so the CSS
+    // `scroll-snap-type: y mandatory` is redundant here — and on Firefox it's
+    // actively harmful: with APZ on (DevTools closed) the compositor enforces
+    // mandatory snap on its own thread and hijacks the gesture, snapping the
+    // page instead of letting us scroll a card's inner content. Opening DevTools
+    // disables APZ, which is exactly why the bug "fixed itself" with the
+    // inspector open. Disable CSS snap outright for fine pointers; touch keeps
+    // its (perfect) native CSS snap because this effect never runs there.
+    html.style.setProperty("scroll-snap-type", "none", "important");
     let lastTs = 0;
     let animUntil = 0;
     let rafId = 0;
@@ -76,20 +85,15 @@ export default function SnapController() {
       return best;
     }
 
-    // Animate the window to `to` ourselves (easeOutCubic). Two CSS features have
-    // to be suspended for the duration or the animation breaks:
-    //   - `scroll-snap-type: mandatory` — Firefox insta-snaps any programmatic
-    //     scroll to the nearest snap point, so it never animates.
-    //   - `scroll-behavior: smooth` — makes every per-frame scrollTo ALSO try to
-    //     smooth-animate, so the frames fight and stutter/jump.
-    // Input is blocked by animUntil meanwhile, so suspending them is safe; we
-    // restore both once we've landed exactly on the snap point.
+    // Animate the window to `to` ourselves (easeOutCubic). `scroll-behavior:
+    // smooth` has to be suspended for the duration or every per-frame scrollTo
+    // ALSO tries to smooth-animate, so the frames fight and stutter/jump. Input
+    // is blocked by animUntil meanwhile, so suspending it is safe. (Snap-type is
+    // already off for the whole session — see above.)
     function suspendCss() {
-      html.style.setProperty("scroll-snap-type", "none", "important");
       html.style.setProperty("scroll-behavior", "auto", "important");
     }
     function restoreCss() {
-      html.style.removeProperty("scroll-snap-type");
       html.style.removeProperty("scroll-behavior");
     }
     function animateScroll(to: number) {
@@ -134,14 +138,27 @@ export default function SnapController() {
     function activeInner(panel: HTMLElement | undefined): HTMLElement | null {
       if (!panel) return null;
       const vw = window.innerWidth;
+      const center = vw / 2;
       const els = panel.querySelectorAll<HTMLElement>(".panel-body, .card-scroll");
+      // Pick the scroller closest to the viewport centre, not just the first one
+      // on screen: a horizontally-clipped neighbour card can still report a centre
+      // a few px inside the viewport, so "first on screen" could grab the wrong
+      // card. The active (centred) card always wins this.
+      let best: HTMLElement | null = null;
+      let bestDist = Infinity;
       for (const el of els) {
         if (el.scrollHeight <= el.clientHeight + 1) continue;
         const r = el.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0) continue;
         const cx = r.left + r.width / 2;
-        if (r.width > 0 && r.height > 0 && cx > 0 && cx < vw) return el;
+        if (cx <= 0 || cx >= vw) continue;
+        const dist = Math.abs(cx - center);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = el;
+        }
       }
-      return null;
+      return best;
     }
 
     function onWheel(e: WheelEvent) {
@@ -248,20 +265,31 @@ export default function SnapController() {
       const panels = getPanels();
       const tops = topsOf(panels);
       const ci = currentIndex(tops);
-      let next = ci;
-      if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") next = ci + 1;
-      else if (e.key === "ArrowUp" || e.key === "PageUp") next = ci - 1;
-      else if (e.key === "Home") next = 0;
-      else if (e.key === "End") next = tops.length - 1;
 
-      const dir = next > ci ? 1 : -1;
-      const inner = activeInner(panels[ci]);
-      if (inner && canScroll(inner, dir)) return;
-
-      if (next !== ci) {
+      // Home/End jump straight to the first/last section.
+      if (e.key === "Home" || e.key === "End") {
         e.preventDefault();
-        snapTo(next, tops);
+        snapTo(e.key === "Home" ? 0 : tops.length - 1, tops);
+        return;
       }
+
+      const dir = e.key === "ArrowUp" || e.key === "PageUp" ? -1 : 1;
+
+      // Scroll the section's inner content first (the card isn't focused, so the
+      // browser won't do it for us); only snap once the content is at its edge.
+      const inner = activeInner(panels[ci]);
+      if (inner && canScroll(inner, dir)) {
+        e.preventDefault();
+        const page = e.key === "PageDown" || e.key === "PageUp" || e.key === " ";
+        const step = page ? inner.clientHeight * 0.9 : 64;
+        const max = inner.scrollHeight - inner.clientHeight;
+        const nextTop = inner.scrollTop + dir * step;
+        inner.scrollTop = nextTop < 0 ? 0 : nextTop > max ? max : nextTop;
+        return;
+      }
+
+      e.preventDefault();
+      snapTo(ci + dir, tops);
     }
 
     window.addEventListener("wheel", onWheel, { passive: false });
@@ -272,6 +300,7 @@ export default function SnapController() {
       window.removeEventListener("keydown", onKeyDown);
       cancelAnimationFrame(rafId);
       restoreCss();
+      html.style.removeProperty("scroll-snap-type");
     };
   }, []);
 
