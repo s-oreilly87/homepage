@@ -9,13 +9,14 @@ export function ScrollIndicator({ targetId, label }: { targetId: string; label?:
   }
 
   return (
-    <div className="shrink-0 flex justify-center pb-1">
+    <div className="flex shrink-0 justify-center pb-1">
       <button
         type="button"
         onClick={handleClick}
         aria-label={label ? `Scroll to ${label}` : "Scroll to next section"}
-        className="group flex h-6 w-12 items-center justify-center text-dim/45 transition-colors hover:text-accent focus:outline-none focus-visible:text-accent"
+        className="group relative flex h-6 w-12 items-center justify-center text-dim/60 transition-colors hover:text-accent focus:outline-none focus-visible:text-accent"
       >
+        <span className="absolute top-1/2 left-1/2 size-12 -translate-1/2 pointer-fine:hidden" aria-hidden="true" />
         <svg
           width="20"
           height="20"

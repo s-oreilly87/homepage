@@ -22,22 +22,22 @@ export default function Contact({ children }: { children?: ReactNode }) {
   return (
     <section id="contact" className="panel">
       <div className="pt-6 pb-2">
-        <p tabIndex={0} className="section-label focus:outline-none focus-visible:text-accent transition-colors w-fit">Contact</p>
+        <p tabIndex={0} className="section-label w-fit transition-colors focus:outline-none focus-visible:text-accent">Contact</p>
       </div>
 
-      <div className="panel-body animate-panel flex flex-col">
+      <div className="panel-body flex animate-panel flex-col">
         <div className="pt-2">
-          <p className="text-base/7 sm:text-base text-dim text-pretty max-w-[38ch] mb-6">
+          <p className="mb-6 max-w-[38ch] text-base/7 text-pretty text-dim sm:text-base">
             Open to building ambitious projects and solving complex problems. Feel free to reach out.
           </p>
 
-          <div className="flex items-center flex-wrap gap-x-5 gap-y-3">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
 
             <div className="flex items-center gap-2">
               <a
                 href={`mailto:${EMAIL}`}
                 onClick={handleEmailClick}
-                className="flex items-center gap-2 font-display text-[0.875rem] sm:text-[0.8125rem] text-dim hover:text-accent transition-colors"
+                className="flex items-center gap-2 font-display text-[0.875rem] text-dim transition-colors hover:text-accent sm:text-[0.8125rem]"
               >
                 <MailIcon />
                 {EMAIL}
@@ -55,7 +55,7 @@ export default function Contact({ children }: { children?: ReactNode }) {
               href={`https://${GITHUB}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 font-display text-[0.875rem] sm:text-[0.8125rem] text-dim hover:text-accent transition-colors"
+              className="flex items-center gap-2 font-display text-[0.875rem] text-dim transition-colors hover:text-accent sm:text-[0.8125rem]"
             >
               <GitHubIcon />
               {GITHUB}
@@ -67,7 +67,7 @@ export default function Contact({ children }: { children?: ReactNode }) {
               href={`https://${LINKEDIN}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 font-display text-[0.875rem] sm:text-[0.8125rem] text-dim hover:text-accent transition-colors"
+              className="flex items-center gap-2 font-display text-[0.875rem] text-dim transition-colors hover:text-accent sm:text-[0.8125rem]"
             >
               <LinkedInIcon />
               {LINKEDIN}

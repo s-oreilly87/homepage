@@ -15,7 +15,7 @@ export default function Home() {
       <Nav />
       <SnapController />
       <div className="relative z-10">
-        <div className="max-w-170 mx-auto px-6">
+        <div className="mx-auto max-w-170 px-6">
           <Hero />
           <Stack />
           <Projects />

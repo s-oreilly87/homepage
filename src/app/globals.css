@@ -22,7 +22,11 @@
   --color-surface:  #111111;
   --color-line:     #1e1e1e;
   --color-primary:  #f0f0f0;
-  --color-dim:      #888888;
+  /* Secondary text — bumped from #888 for legibility on the dark page (WCAG AA). */
+  --color-dim:      #a6a6a6;
+  /* Tertiary / decorative text (eyebrows, counters, idle icons). Lightest grey that
+     still clears AA at small sizes, so it reads without competing with --color-dim. */
+  --color-faint:    #808080;
   --color-accent:   #fb923c;
 
   /* Fonts — next/font injects --font-dm-mono and --font-geist on <html> */
@@ -31,40 +35,45 @@
 }
 
 /* ── Base ────────────────────────────────────── */
-*,
-*::before,
-*::after { box-sizing: border-box; }
+/* Authored inside `@layer base` so Tailwind's `utilities` layer wins — otherwise
+   an unlayered `a { color: inherit }` would override every `text-*` color utility
+   (including hover states) on links. */
+@layer base {
+  *,
+  *::before,
+  *::after { box-sizing: border-box; }
 
-html {
-  color-scheme: dark;
-  scroll-behavior: smooth;
-  /* Pure-CSS section snapping — every panel is exactly one viewport tall, so
-     mandatory snap stays smooth (no JS wheel-jacking required). Each panel
-     reserves the nav height internally, so panels snap to the very top. */
-  scroll-snap-type: y mandatory;
-  scroll-padding-top: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
   html {
-    scroll-behavior: auto;
-    scroll-snap-type: none;
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    /* Pure-CSS section snapping — every panel is exactly one viewport tall, so
+       mandatory snap stays smooth (no JS wheel-jacking required). Each panel
+       reserves the nav height internally, so panels snap to the very top. */
+    scroll-snap-type: y mandatory;
+    scroll-padding-top: 0;
   }
-}
 
-body {
-  background-color: var(--color-page);
-  color: var(--color-primary);
-  font-family: var(--font-sans), sans-serif;
-  line-height: 1.7;
-}
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+      scroll-snap-type: none;
+    }
+  }
 
-::selection {
-  background-color: var(--color-accent);
-  color: #000;
-}
+  body {
+    background-color: var(--color-page);
+    color: var(--color-primary);
+    font-family: var(--font-sans), sans-serif;
+    line-height: 1.7;
+  }
 
-a { text-decoration: none; color: inherit; }
+  ::selection {
+    background-color: var(--color-accent);
+    color: #000;
+  }
+
+  a { text-decoration: none; color: inherit; }
+}
 
 /* ── Animations ──────────────────────────────── */
 @keyframes fadeUp {

@@ -22,10 +22,10 @@ export function GithubButton({
       rel="noopener noreferrer"
       aria-label={ariaLabel}
       onClick={onClick}
-      className="flex items-center gap-1.5 px-3 h-9 rounded-md text-[#555] hover:text-primary hover:bg-white/5 transition-colors"
+      className="flex h-9 items-center gap-1.5 rounded-md px-3 text-faint transition-colors hover:bg-white/5 hover:text-primary"
     >
       {showLabel && (
-        <span className="text-[12px] font-medium tracking-wide uppercase mt-0.5">GitHub</span>
+        <span className="mt-0.5 text-[12px] font-medium tracking-wide uppercase">GitHub</span>
       )}
       <svg
         width={size}

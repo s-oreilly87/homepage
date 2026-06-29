@@ -4,22 +4,22 @@ export default function Hero() {
   return (
     <section id="hero" className="panel">
       <div className="panel-body flex flex-col">
-        <div className="animate-hero my-auto pt-6 pb-10">
-      <p className="font-display text-[0.6875rem] tracking-widest uppercase mb-10 flex items-center gap-3">
-        <span className="text-[#444]">01</span>
-        <span className="inline-block size-1.5 rounded-full bg-accent shrink-0" aria-hidden="true" />
+        <div className="my-auto animate-hero pt-6 pb-10">
+      <p className="mb-10 flex items-center gap-3 font-display text-[0.6875rem] tracking-widest uppercase">
+        <span className="text-faint">01</span>
+        <span className="inline-block size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
         <span className="text-accent">Full-Stack Engineer</span>
       </p>
 
       <h1
         tabIndex={0}
-        className="font-display text-primary tracking-tight mb-8 focus:outline-none"
+        className="mb-8 font-display tracking-tight text-primary focus:outline-none"
         style={{ fontSize: "clamp(3rem, 11vw, 5.5rem)", lineHeight: 1.0 }}
       >Sean<br />O'Reilly</h1>
 
-      <div className="w-10 h-px bg-accent mb-8" aria-hidden="true" />
+      <div className="mb-8 h-px w-10 bg-accent" aria-hidden="true" />
 
-      <div className="text-dim text-base text-pretty max-w-[50ch] space-y-3 mb-8">
+      <div className="mb-8 max-w-[50ch] space-y-3 text-base text-pretty text-dim">
         <p>
           <span className="text-primary">Senior full-stack engineer</span> with over 4 years shipping production
           software end-to-end. I've built internal platforms,
@@ -35,7 +35,7 @@ export default function Hero() {
         </p>
       </div>
 
-      <p className="font-display text-[#888] text-[0.75rem] flex flex-wrap gap-4">
+      <p className="flex flex-wrap gap-4 font-display text-[0.8125rem] text-dim sm:text-[0.75rem]">
         <span>Remote · NYC</span>
         <span className="text-line" aria-hidden="true">·</span>
         <span>Open to full-time & contract</span>
