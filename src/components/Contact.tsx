@@ -28,9 +28,9 @@ export default function Contact({ children }: { children?: ReactNode }) {
       <div className="panel-body flex animate-panel flex-col">
         <div className="flex flex-1 flex-col justify-center">
           <p className="mb-6 max-w-[38ch] text-base/7 text-pretty text-dim sm:text-base">
-            If you’re hiring or have a project that needs someone who can own it end-to-end, I’d like to hear from you.
+            If you’re hiring, or you have a project that needs someone who can take it from idea to production and own the whole thing, I’d love to hear from you.
             <br /><br />
-            Happy to talk about full-time roles, contract work, or collaborations on production software
+            Always happy to talk through full-time roles, contract work, or collaborating on something ambitious.
           </p>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
