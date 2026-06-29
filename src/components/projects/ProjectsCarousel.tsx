@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { projects } from "@/lib/projects";
 import { ProjectCard } from "@/components/projects/ProjectCard";
+import { Chevron } from "@/components/icons";
+import { TapTarget } from "@/components/TapTarget";
 
 export function ProjectsCarousel() {
   const count = projects.length;
@@ -204,23 +206,15 @@ function NavButton({
       aria-label={isPrev ? "Previous project" : "Next project"}
       className="group relative flex size-11 shrink-0 items-center justify-center rounded-full border border-line text-dim transition-colors hover:border-accent/50 hover:bg-accent/5 hover:text-accent focus:outline-none focus-visible:border-accent focus-visible:text-accent sm:size-9"
     >
-      <span className="absolute top-1/2 left-1/2 size-12 -translate-1/2 pointer-fine:hidden" aria-hidden="true" />
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+      <TapTarget />
+      <Chevron
+        direction={isPrev ? "left" : "right"}
+        size={18}
+        strokeWidth={1.75}
         className={`transition-transform duration-300 ${
           isPrev ? "group-hover:-translate-x-0.5" : "group-hover:translate-x-0.5"
         }`}
-        aria-hidden="true"
-      >
-        <path d={isPrev ? "m15 18-6-6 6-6" : "m9 18 6-6-6-6"} />
-      </svg>
+      />
     </button>
   );
 }

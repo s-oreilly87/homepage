@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { siGithub } from "simple-icons";
+import { GitHubGlyph, LinkedInGlyph, MailIcon } from "@/components/icons";
 
 const EMAIL  = "sean@seanoreilly.dev";
 const GITHUB = "github.com/s-oreilly87";
@@ -39,7 +39,7 @@ export default function Contact({ children }: { children?: ReactNode }) {
                 onClick={handleEmailClick}
                 className="flex items-center gap-2 font-display text-[0.875rem] text-dim transition-colors hover:text-accent sm:text-[0.8125rem]"
               >
-                <MailIcon />
+                <MailIcon size={13} />
                 {EMAIL}
               </a>
               {copied && (
@@ -57,7 +57,7 @@ export default function Contact({ children }: { children?: ReactNode }) {
               rel="noopener noreferrer"
               className="flex items-center gap-2 font-display text-[0.875rem] text-dim transition-colors hover:text-accent sm:text-[0.8125rem]"
             >
-              <GitHubIcon />
+              <GitHubGlyph size={13} className="shrink-0" />
               {GITHUB}
             </a>
 
@@ -69,7 +69,7 @@ export default function Contact({ children }: { children?: ReactNode }) {
               rel="noopener noreferrer"
               className="flex items-center gap-2 font-display text-[0.875rem] text-dim transition-colors hover:text-accent sm:text-[0.8125rem]"
             >
-              <LinkedInIcon />
+              <LinkedInGlyph size={13} className="shrink-0" />
               {LINKEDIN}
             </a>
 
@@ -81,57 +81,3 @@ export default function Contact({ children }: { children?: ReactNode }) {
     </section>
   );
 }
-
-function MailIcon() {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      width={13}
-      height={13}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.25}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      style={{ flexShrink: 0 }}
-    >
-      <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" />
-      <path d="M1.5 5L8 9.5L14.5 5" />
-    </svg>
-  );
-}
-
-function GitHubIcon() {
-  return (
-    <svg
-      role="img"
-      viewBox="0 0 24 24"
-      width={13}
-      height={13}
-      fill="currentColor"
-      aria-hidden="true"
-      style={{ flexShrink: 0 }}
-    >
-      <path d={siGithub.path} />
-    </svg>
-  );
-}
-
-function LinkedInIcon() {
-  return (
-    <svg
-      role="img"
-      viewBox="0 0 24 24"
-      width={13}
-      height={13}
-      fill="currentColor"
-      aria-hidden="true"
-      style={{ flexShrink: 0 }}
-    >
-      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-    </svg>
-  );
-}
-
-
