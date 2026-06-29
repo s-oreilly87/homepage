@@ -5,6 +5,7 @@ import type { KeyboardEvent, MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { ImageModal } from "@/components/projects/ImageModal";
+import { Chevron } from "@/components/icons";
 
 interface ImageCarouselProps {
   images: string[];
@@ -100,9 +101,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
               className="absolute top-1/2 left-0 z-10 flex size-8 -translate-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white opacity-100 backdrop-blur-md transition-all outline-none hover:bg-black/60 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent/50 md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
               aria-label="Previous image"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m15 18-6-6 6-6" />
-              </svg>
+              <Chevron direction="left" size={14} strokeWidth={2.5} />
             </button>
             <button
               onClick={next}
@@ -110,9 +109,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
               className="absolute top-1/2 right-0 z-10 flex size-8 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white opacity-100 backdrop-blur-md transition-all outline-none hover:bg-black/60 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent/50 md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
               aria-label="Next image"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m9 18 6-6-6-6" />
-              </svg>
+              <Chevron direction="right" size={14} strokeWidth={2.5} />
             </button>
           </>
         )}

@@ -18,7 +18,12 @@
 # misc
 .DS_Store
 *.pem
+
+# editor / agent tooling
+.idea
 .junie
+.agents
+.claude
 
 # debug
 npm-debug.log*
