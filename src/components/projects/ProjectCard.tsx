@@ -66,7 +66,7 @@ export function ProjectCard({ project, heightMode = "auto" }: ProjectCardProps) 
 
       <div className="flex items-center gap-2 mb-4">
         <span className={`size-1.5 rounded-full shrink-0 ${status.dotClassName}`} aria-hidden="true" />
-        <span className="font-display text-[0.625rem] tracking-wide text-[#777]">
+        <span className="font-display text-[0.6875rem] sm:text-[0.625rem] tracking-wide text-faint">
           {status.label}
         </span>
       </div>
@@ -85,7 +85,12 @@ export function ProjectCard({ project, heightMode = "auto" }: ProjectCardProps) 
               className="inline-flex items-center gap-1.5 hover:text-accent group-hover/title:text-accent transition-colors after:absolute after:inset-0 after:z-0"
             >
               {project.title}
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent/50 group-hover/title:text-accent transition-colors">
+              {project.demo && (
+                <span className="font-display text-[0.625rem] font-medium tracking-wider uppercase text-accent shrink-0">
+                  Demo
+                </span>
+              )}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent shrink-0 transition-colors">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                 <polyline points="15 3 21 3 21 9" />
                 <line x1="10" y1="14" x2="21" y2="3" />
@@ -113,7 +118,7 @@ export function ProjectCard({ project, heightMode = "auto" }: ProjectCardProps) 
                 rel="noopener noreferrer"
                 onClick={(event) => event.stopPropagation()}
                 aria-label={`${project.title} live site`}
-                className="size-7 flex items-center justify-center rounded-md text-[#555] hover:text-primary hover:bg-white/5 transition-colors"
+                className="size-7 flex items-center justify-center rounded-md text-faint hover:text-primary hover:bg-white/5 transition-colors"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -126,7 +131,7 @@ export function ProjectCard({ project, heightMode = "auto" }: ProjectCardProps) 
         )}
       </div>
 
-      <p className="text-[#aaa] text-sm text-pretty leading-relaxed mb-5 [&_strong]:text-primary/90 [&_strong]:font-semibold [&_b]:text-primary/90 [&_b]:font-semibold [&_em]:text-primary/80 [&_em]:italic [&_i]:text-primary/80 [&_i]:italic">
+      <p className="text-dim text-base sm:text-sm text-pretty leading-relaxed mb-5 [&_strong]:text-primary/90 [&_strong]:font-semibold [&_b]:text-primary/90 [&_b]:font-semibold [&_em]:text-primary/80 [&_em]:italic [&_i]:text-primary/80 [&_i]:italic">
         <FormattedText text={project.description} />
       </p>
 
@@ -134,7 +139,7 @@ export function ProjectCard({ project, heightMode = "auto" }: ProjectCardProps) 
         {project.highlights.map((highlight) => (
           <li
             key={highlight}
-            className="flex items-start gap-2.5 text-[#777] text-[0.8125rem] leading-snug [&_strong]:text-primary/90 [&_strong]:font-semibold [&_b]:text-primary/90 [&_b]:font-semibold [&_em]:text-primary/80 [&_em]:italic [&_i]:text-primary/80 [&_i]:italic"
+            className="flex items-start gap-2.5 text-dim text-sm sm:text-[0.8125rem] leading-snug [&_strong]:text-primary/90 [&_strong]:font-semibold [&_b]:text-primary/90 [&_b]:font-semibold [&_em]:text-primary/80 [&_em]:italic [&_i]:text-primary/80 [&_i]:italic"
           >
             <span className="mt-[0.35em] size-1 rounded-full bg-accent/50 shrink-0" aria-hidden="true" />
             <FormattedText text={highlight} />
