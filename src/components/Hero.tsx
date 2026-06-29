@@ -1,6 +1,10 @@
+import { ScrollIndicator } from "@/components/ScrollIndicator";
+
 export default function Hero() {
   return (
-    <section id="hero" className="animate-hero snap-section min-h-[90svh] flex flex-col justify-end pb-16">
+    <section id="hero" className="panel">
+      <div className="panel-body flex flex-col">
+        <div className="animate-hero my-auto pt-6 pb-10">
       <p className="font-display text-[0.6875rem] tracking-widest uppercase mb-10 flex items-center gap-3">
         <span className="text-[#444]">01</span>
         <span className="inline-block size-1.5 rounded-full bg-accent shrink-0" aria-hidden="true" />
@@ -36,7 +40,9 @@ export default function Hero() {
         <span className="text-line" aria-hidden="true">·</span>
         <span>Open to full-time & contract</span>
       </p>
-
+        </div>
+      </div>
+      <ScrollIndicator targetId="stack" label="Stack" />
     </section>
   );
 }
