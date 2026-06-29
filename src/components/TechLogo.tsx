@@ -67,7 +67,7 @@ export function TechLogo({
       width={size}
       height={size}
       xmlns="http://www.w3.org/2000/svg"
-      className="fill-current shrink-0"
+      className="shrink-0 fill-current"
       aria-hidden="true"
     >
       <path d={icon.path} />
@@ -78,13 +78,13 @@ export function TechLogo({
     return (
       <span className="inline-flex items-center gap-1.5 text-dim">
         {svgEl}
-        {showLabel && <span className="font-display text-[0.6875rem]">{name}</span>}
+        {showLabel && <span className="font-display text-[0.75rem] sm:text-[0.6875rem]">{name}</span>}
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 font-display text-[0.6875rem] text-dim hover:text-primary hover:border-line/60 transition-colors duration-200 bg-surface border border-line rounded-md px-2.5 py-1.5 cursor-default">
+    <span className="inline-flex cursor-default items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-2 font-display text-[0.75rem] text-dim transition-colors duration-200 hover:border-line/60 hover:text-primary sm:py-1.5 sm:text-[0.6875rem]">
       {svgEl}
       {showLabel && name}
     </span>

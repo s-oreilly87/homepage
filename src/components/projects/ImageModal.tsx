@@ -38,7 +38,7 @@ export function ImageModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-6 md:p-16 backdrop-blur-md transition-opacity duration-300"
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/95 p-6 backdrop-blur-md transition-opacity duration-300 md:p-16"
       onClick={onClose}
     >
       <button
@@ -46,7 +46,7 @@ export function ImageModal({
           event.stopPropagation();
           onClose();
         }}
-        className="absolute top-6 right-6 z-50 size-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all border border-white/10"
+        className="absolute top-6 right-6 z-50 flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white"
         aria-label="Close modal"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -61,7 +61,7 @@ export function ImageModal({
               event.stopPropagation();
               onPrev?.();
             }}
-            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 size-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all border border-white/10 backdrop-blur-md"
+            className="absolute top-1/2 left-4 z-50 flex size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 backdrop-blur-md transition-all hover:bg-white/10 hover:text-white md:left-8"
             aria-label="Previous image"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -73,7 +73,7 @@ export function ImageModal({
               event.stopPropagation();
               onNext?.();
             }}
-            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 size-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all border border-white/10 backdrop-blur-md"
+            className="absolute top-1/2 right-4 z-50 flex size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 backdrop-blur-md transition-all hover:bg-white/10 hover:text-white md:right-8"
             aria-label="Next image"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -84,7 +84,7 @@ export function ImageModal({
       )}
 
       <div
-        className="relative w-full h-full flex items-center justify-center"
+        className="relative flex size-full items-center justify-center"
         onClick={(event) => event.stopPropagation()}
       >
         <Image

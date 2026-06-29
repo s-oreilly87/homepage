@@ -12,9 +12,9 @@ export default function Footer() {
   };
 
   return (
-    <footer id="footer" className="mt-auto shrink-0 pt-10 pb-4 flex flex-col items-center gap-8 border-t border-line">
+    <footer id="footer" className="mt-auto flex shrink-0 flex-col items-center gap-8 border-t border-line pt-10 pb-4">
       <div className="flex flex-col items-center gap-4 pt-2">
-        <span className="text-[#444] text-[0.625rem] font-display uppercase tracking-[0.2em]">Built with</span>
+        <span className="font-display text-[0.625rem] tracking-[0.2em] text-faint uppercase">Built with</span>
         <div className="flex flex-wrap justify-center gap-2 px-6">
           <TechLogo name="Next.js" size={12} />
           <TechLogo name="React" size={12} />
@@ -30,15 +30,15 @@ export default function Footer() {
       <button
         tabIndex={0}
         onClick={scrollToTop}
-        className="group flex flex-col items-center gap-3 text-dim hover:text-primary focus:outline-none transition-all duration-300"
+        className="group flex flex-col items-center gap-3 text-dim transition-all duration-300 hover:text-primary focus:outline-none"
         aria-label="Back to top"
       >
-        <div className="size-10 rounded-full border border-line flex items-center justify-center group-hover:border-accent/50 group-hover:bg-accent/5 group-focus-visible:border-accent group-focus-visible:bg-accent/5 transition-all duration-300">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-y-0.5 group-focus-visible:-translate-y-0.5 transition-transform duration-300">
+        <div className="flex size-10 items-center justify-center rounded-full border border-line transition-all duration-300 group-hover:border-accent/50 group-hover:bg-accent/5 group-focus-visible:border-accent group-focus-visible:bg-accent/5">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:-translate-y-0.5 group-focus-visible:-translate-y-0.5">
             <path d="m18 15-6-6-6 6"/>
           </svg>
         </div>
-        <span className="font-display text-[0.625rem] tracking-[0.2em] uppercase text-[#555] group-hover:text-accent group-focus-visible:text-accent transition-colors">Back to top</span>
+        <span className="font-display text-[0.625rem] tracking-[0.2em] text-faint uppercase transition-colors group-hover:text-accent group-focus-visible:text-accent">Back to top</span>
       </button>
     </footer>
   );
