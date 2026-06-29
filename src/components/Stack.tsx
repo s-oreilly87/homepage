@@ -3,7 +3,7 @@ import { ScrollIndicator } from "@/components/ScrollIndicator";
 
 const STACK: Record<string, string[]> = {
   Frontend:                 ["React", "Next.js", "TypeScript", "Vue.js", "Tailwind CSS", "Tanstack"],
-  Backend:                  ["Laravel", "PHP", "Python", "FastAPI", "Java", "Spring Boot"],
+  Backend:                  ["PHP", "Laravel", "Inertia", "Python", "FastAPI", "Java", "Spring Boot"],
   "Database & Queues":      ["MySQL", "MariaDB", "PostgreSQL", "Redis", "Laravel Horizon"],
   "DevOps & AI":            ["Docker", "Claude API", "Laravel AI"],
 };
@@ -17,9 +17,9 @@ export default function Stack() {
 
       <div className="panel-body flex animate-panel flex-col gap-8 pb-10">
         <p className="max-w-[52ch] text-base/7 text-pretty text-dim sm:text-base">
-          I'm strongest building with <span className="text-primary">Laravel</span> and <span className="text-primary">React{"\u2009"}/{"\u2009"}Next.js</span> with <span className="text-primary">Typescript</span>.
-          Also very comfortable in <span className="text-primary">Java</span> and<span className="text-primary"> Python</span> frameworks and <span className="text-primary">Vue.js</span> frontends.
-          Recently hands-on with <span className="text-primary">LLM API integration</span> and AI agent workflows using MCP tooling in production.
+          I'm at my best building with <span className="text-primary">Laravel</span> and <span className="text-primary">React{"\u2009"}/{"\u2009"}Next.js</span> on a <span className="text-primary">TypeScript</span> foundation,
+          and just as comfortable in <span className="text-primary">Java</span> and <span className="text-primary">Python</span> frameworks or a <span className="text-primary">Vue.js</span> frontend.
+          Lately I've been deep in <span className="text-primary">LLM API integration</span> and agentic workflows, wiring up MCP tooling that holds up in production.
         </p>
 
         <div className="flex flex-col gap-6">
