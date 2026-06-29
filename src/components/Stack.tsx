@@ -17,9 +17,9 @@ export default function Stack() {
 
       <div className="panel-body flex animate-panel flex-col gap-8 pb-10">
         <p className="max-w-[52ch] text-base/7 text-pretty text-dim sm:text-base">
-          I'm at my best building with <span className="text-primary">Laravel</span> and <span className="text-primary">React{"\u2009"}/{"\u2009"}Next.js</span> on a <span className="text-primary">TypeScript</span> foundation,
+          I'm at my best building with <span className="text-primary">Laravel</span> and <span className="text-primary">React</span> on a <span className="text-primary">TypeScript</span> foundation,
           and just as comfortable in <span className="text-primary">Java</span> and <span className="text-primary">Python</span> frameworks or a <span className="text-primary">Vue.js</span> frontend.
-          Lately I've been deep in <span className="text-primary">LLM API integration</span> and agentic workflows, wiring up MCP tooling that holds up in production.
+          Lately I've been deep in <span className="text-primary">LLM API integration</span> and agentic workflows, wiring up harnesses for AI-native development and tooling that holds up in production.
         </p>
 
         <div className="flex flex-col gap-6">
