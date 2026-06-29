@@ -62,15 +62,7 @@ export default function Nav() {
   }
 
   return (
-    <header
-      className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between px-6"
-      style={{
-        background: "rgba(10,10,10,0.75)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        borderBottom: "1px solid rgba(255,255,255,0.04)",
-      }}
-    >
+    <header className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b border-white/[0.04] bg-page/75 px-6 backdrop-blur-md">
       <button
         id="nav-logo"
         onClick={() => scrollTo("hero")}
