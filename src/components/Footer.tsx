@@ -12,8 +12,8 @@ export default function Footer() {
   };
 
   return (
-    <footer id="footer" className="snap-section mt-20 pb-20 flex flex-col items-center gap-12 border-t border-line">
-      <div className="flex flex-col items-center gap-4 pt-16">
+    <footer id="footer" className="mt-auto shrink-0 pt-10 pb-4 flex flex-col items-center gap-8 border-t border-line">
+      <div className="flex flex-col items-center gap-4 pt-2">
         <span className="text-[#444] text-[0.625rem] font-display uppercase tracking-[0.2em]">Built with</span>
         <div className="flex flex-wrap justify-center gap-2 px-6">
           <TechLogo name="Next.js" size={12} />

@@ -1,6 +1,6 @@
 import ClientCanvas from "@/components/ClientCanvas";
 import Nav from "@/components/Nav";
-import ScrollManager from "@/components/ScrollManager";
+import SnapController from "@/components/SnapController";
 import Hero from "@/components/Hero";
 import Stack from "@/components/Stack";
 import Projects from "@/components/Projects";
@@ -13,14 +13,15 @@ export default function Home() {
       <ClientCanvas />
       <div className="fixed inset-0 z-1 bg-page/60" aria-hidden="true" />
       <Nav />
-      <ScrollManager />
-      <div className="relative z-10 pt-14">
+      <SnapController />
+      <div className="relative z-10">
         <div className="max-w-170 mx-auto px-6">
           <Hero />
           <Stack />
           <Projects />
-          <Contact />
-          <Footer />
+          <Contact>
+            <Footer />
+          </Contact>
         </div>
       </div>
     </>
