@@ -33,7 +33,7 @@ export default function Hero() {
               for <span className="text-primary">ATS Engineers.</span>{" "}
             </p>
             <p>
-              Academic background in biochemistry and jazz performance. Former Head Brewer and Production Manager at Strange Fellows Brewing: I'm passionate about my interests and I and see them through.
+              Academic background in biochemistry and jazz performance. Former Head Brewer and Production Manager at Strange Fellows Brewing: I'm passionate about my interests and I and see things through.
             </p>
           </div>
 
