@@ -28,10 +28,12 @@ export default function Hero() {
             <p>
               Most recently at{" "}
               <span className="text-primary">Nettwerk Music Group</span> through
-              Springloaded, building a unified platform in Laravel, React, and
-              TypeScript. Before that, ML-assisted tooling in Spring Boot and Vue.js
-              at <span className="text-primary">ATS Engineers.</span>{" "}
-              Academic background in biochemistry and jazz performance, former Head Brewer and Craft brewery production manager: I'm passionate about my interests and I and see them through.
+              Springloaded, building a unified platform with LLM integrations in Laravel, React, and
+              TypeScript. Before that with Steel Toad, an AI-powered scheduling optimization tool with Timefold in Spring Boot and Vue.js
+              for <span className="text-primary">ATS Engineers.</span>{" "}
+            </p>
+            <p>
+              Academic background in biochemistry and jazz performance. Former Head Brewer and Production Manager at Strange Fellows Brewing: I'm passionate about my interests and I and see them through.
             </p>
           </div>
 
