@@ -31,7 +31,7 @@ export default function Hero() {
               Springloaded, building a unified platform in Laravel, React, and
               TypeScript. Before that, ML-assisted tooling in Spring Boot and Vue.js
               at <span className="text-primary">ATS Engineers.</span>{" "}
-              Academic background in biochemistry and jazz performance, which is a roundabout way of saying I like learning hard things and seeing them through.
+              Academic background in biochemistry and jazz performance, former Head Brewer and Craft brewery production manager: I'm passionate about my interests and I and see them through.
             </p>
           </div>
 
