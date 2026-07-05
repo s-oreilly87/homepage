@@ -17,12 +17,13 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Sean O'Reilly",
+  title: "Sean O'Reilly | Full-Stack Developer",
   description:
     "Full-stack developer. Building web applications with Laravel, Next.js, FastAPI and everything in between.",
   metadataBase: new URL("https://about.seanoreilly.dev"),
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Sean O'Reilly",
+    title: "Sean O'Reilly | Full-Stack Developer",
     description: "Full-stack developer. Laravel · Next.js · FastAPI",
     url: "https://about.seanoreilly.dev",
     siteName: "Sean O'Reilly",
@@ -30,11 +31,24 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
-    title: "Sean O'Reilly",
+    card: "summary_large_image",
+    title: "Sean O'Reilly | Full-Stack Developer",
     description: "Full-stack developer. Laravel · Next.js · FastAPI",
   },
   robots: { index: true, follow: true },
+};
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Sean O'Reilly",
+  url: "https://about.seanoreilly.dev",
+  jobTitle: "Full-Stack Developer",
+  knowsAbout: ["Next.js", "React", "Laravel", "FastAPI", "TypeScript", "PHP", "Python"],
+  sameAs: [
+    "https://github.com/s-oreilly87",
+    "https://linkedin.com/in/sean-o-reilly-78815124a",
+  ],
 };
 
 export default function RootLayout({
@@ -45,7 +59,13 @@ export default function RootLayout({
       lang="en"
       className={`${dmMono.variable} ${geist.variable} scheme-only-dark antialiased`}
     >
-      <body className="grain-overlay">{children}</body>
+      <body className="grain-overlay">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
