@@ -36,8 +36,11 @@ export default function OgImage() {
         <div style={{ fontSize: 36, color: "#a1a1aa", marginTop: 24 }}>
           Full-Stack Developer
         </div>
-        <div style={{ fontSize: 28, color: "#fb923c", marginTop: 16 }}>
-          Laravel · Next.js · FastAPI
+        <div style={{ fontSize: 26, color: "#d4d4d8", marginTop: 20 }}>
+          Building web applications end to end — from database to deployment.
+        </div>
+        <div style={{ fontSize: 30, color: "#fb923c", marginTop: 28, fontWeight: 600 }}>
+          Laravel · React · Next.js · FastAPI
         </div>
       </div>
     ),
