@@ -19,7 +19,7 @@ const geist = Geist({
 export const metadata: Metadata = {
   title: "Sean O'Reilly | Full-Stack Developer",
   description:
-    "Full-stack developer. Building web applications with Laravel, Next.js, FastAPI and everything in between.",
+    "Full-stack developer. Building AI-native web applications end-to-end with Laravel, React, FastAPI.",
   metadataBase: new URL("https://about.seanoreilly.dev"),
   alternates: { canonical: "/" },
   openGraph: {
