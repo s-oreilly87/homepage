@@ -40,6 +40,36 @@ export const projects: Project[] = [
     imagePalette: { from: "#07150c", via: "#102519", to: "#193d23" },
   },
   {
+    title: "Beer Engine",
+    description:
+      "Brewery management software covering AI-assisted recipe building, multi-supplier ingredient shopping, a guided brew day, fermentation tracking, and the brewing science underneath it all. A private SaaS currently in development.",
+    highlights: [
+      "<bold>Demo coming soon.</bold> Already well past the home-brewer scope, and now being pushed toward small commercial breweries.",
+      "<bold>AI recipe generator:</bold> pick a style, dial in target ABV/IBU/color/FG, add a guiding note, and get back a complete recipe — grist, hop schedule, yeast, water salts, and mash steps — built only from ingredients you can actually buy or already have on the shelf.",
+      "<bold>Shop the cheapest ingredients:</bold> live price comparison across every supplier you use, solved as whole packages rather than raw weights. Compare the lowest-cost bundle, the fewest-suppliers bundle, and single-store plans side by side, with brand substitutions flagged and currencies kept separate.",
+      "<bold>Brew-day wizard:</bold> a guided run through prep, mash, collection, boil, knockout, fermentation, and packaging, with live timers, one-tap timestamps, incident logging, and mid-brew ingredient substitution — or a printable brew sheet if you would rather work off paper.",
+      "<bold>Fermentation tracking:</bold> log gravity and temperature as they happen and watch the fermentation profile plot against expected FG, then carry the measured numbers straight through to attenuation, ABV, carbonation, and packaging runs.",
+      "<bold>Brewing science, not lookup tables:</bold> post-flameout hop utilization (mIBU), fermentability-aware FG prediction, a water salt solver with advisory mash-pH modelling, yeast pitch rates with lot viability and repitch ranking, and both natural and forced carbonation — all unit-aware, metric or imperial.",
+      "<bold>Curated ingredient catalog:</bold> thousands of hops, malts, and yeasts merged from supplier and manufacturer sources through a separate catalog workbench, with cross-lab yeast equivalencies, style pairings, and the full BJCP style library.",
+      "<bold>Built for real breweries:</bold> per-brewery inventory, equipment profiles, and packaging runs, with recipe revisions and lineage tracked through parent and child chains, and community recipes anyone can fork.",
+      "<bold>Themes for every taste:</bold> two complete layout themes — the paper-like “Folio” and a flatter, segmented “Clean” — each rendered in light, dark, and vivid modes.",
+      "<bold>Coming soon:</bold> BeerSmith 2 import (recipes, brew history, and fermentation readings), multi-user breweries with roles and invitations, multi-recipe shopping sessions, malt-family browsing, and competition results with tasting scores and medals.",
+    ],
+    stack: ["Laravel", "Inertia", "React", "TypeScript", "Tailwind CSS", "MariaDB", "Laravel AI"],
+    status: "coming-soon",
+    imagePalette: {from: "#0f0600", via: "#1c0d00", to: "#221200"},
+    images: [
+      "/images/projects/beer-engine-1.png",
+      "/images/projects/beer-engine-2.png",
+      "/images/projects/beer-engine-3.png",
+      "/images/projects/beer-engine-4.png",
+      "/images/projects/beer-engine-5.png",
+      "/images/projects/beer-engine-6.png",
+      "/images/projects/beer-engine-7.png",
+      "/images/projects/beer-engine-8.png",
+    ],
+  },
+  {
     title: "Home Theatre Remote",
     description:
       "Multi-protocol AV controller that unifies Roku TV, Denon/Marantz AVR, an HTPC, a gaming PC, and TP-Link smart-home devices into a single, locally hosted PWA — no cloud, no app store, no account.",
@@ -87,36 +117,6 @@ export const projects: Project[] = [
 
   },
   {
-    title: "Beer Engine",
-    description:
-      "Brewery management software covering AI-assisted recipe building, multi-supplier ingredient shopping, a guided brew day, fermentation tracking, and the brewing science underneath it all. A private SaaS currently in development.",
-    highlights: [
-      "<bold>Demo coming soon.</bold> Already well past the home-brewer scope, and now being pushed toward small commercial breweries.",
-      "<bold>AI recipe generator:</bold> pick a style, dial in target ABV/IBU/color/FG, add a guiding note, and get back a complete recipe — grist, hop schedule, yeast, water salts, and mash steps — built only from ingredients you can actually buy or already have on the shelf.",
-      "<bold>Shop the cheapest ingredients:</bold> live price comparison across every supplier you use, solved as whole packages rather than raw weights. Compare the lowest-cost bundle, the fewest-suppliers bundle, and single-store plans side by side, with brand substitutions flagged and currencies kept separate.",
-      "<bold>Brew-day wizard:</bold> a guided run through prep, mash, collection, boil, knockout, fermentation, and packaging, with live timers, one-tap timestamps, incident logging, and mid-brew ingredient substitution — or a printable brew sheet if you would rather work off paper.",
-      "<bold>Fermentation tracking:</bold> log gravity and temperature as they happen and watch the fermentation profile plot against expected FG, then carry the measured numbers straight through to attenuation, ABV, carbonation, and packaging runs.",
-      "<bold>Brewing science, not lookup tables:</bold> post-flameout hop utilization (mIBU), fermentability-aware FG prediction, a water salt solver with advisory mash-pH modelling, yeast pitch rates with lot viability and repitch ranking, and both natural and forced carbonation — all unit-aware, metric or imperial.",
-      "<bold>Curated ingredient catalog:</bold> thousands of hops, malts, and yeasts merged from supplier and manufacturer sources through a separate catalog workbench, with cross-lab yeast equivalencies, style pairings, and the full BJCP style library.",
-      "<bold>Built for real breweries:</bold> per-brewery inventory, equipment profiles, and packaging runs, with recipe revisions and lineage tracked through parent and child chains, and community recipes anyone can fork.",
-      "<bold>Themes for every taste:</bold> two complete layout themes — the paper-like “Folio” and a flatter, segmented “Clean” — each rendered in light, dark, and vivid modes.",
-      "<bold>Coming soon:</bold> BeerSmith 2 import (recipes, brew history, and fermentation readings), multi-user breweries with roles and invitations, multi-recipe shopping sessions, malt-family browsing, and competition results with tasting scores and medals.",
-    ],
-    stack: ["Laravel", "Inertia", "React", "TypeScript", "Tailwind CSS", "MariaDB", "Laravel AI"],
-    status: "coming-soon",
-    imagePalette: {from: "#0f0600", via: "#1c0d00", to: "#221200"},
-    images: [
-      "/images/projects/beer-engine-1.png",
-      "/images/projects/beer-engine-2.png",
-      "/images/projects/beer-engine-3.png",
-      "/images/projects/beer-engine-4.png",
-      "/images/projects/beer-engine-5.png",
-      "/images/projects/beer-engine-6.png",
-      "/images/projects/beer-engine-7.png",
-      "/images/projects/beer-engine-8.png",
-    ],
-  },
-  {
     title: "Trading Alerts",
     description:
       "Agentic trading-research and alerting platform that pairs deterministic market signals with Claude-powered validation, backtesting, paper trading, and full reasoning traceability.",
@@ -145,19 +145,4 @@ export const projects: Project[] = [
       "/images/projects/trading-alerts-3.png",
     ],
   },
-  {
-    title: "ThriftyAI",
-    description:
-      "A budget-aware control plane for coding agents. It routes every task to the cheapest model that can actually do it, then enforces scope, testing, and review outside the LLM so a cheap local model can't quietly wreck a repo.",
-    highlights: [
-      "<bold>Cost-aware model routing:</bold> sends routine work to free local models and only escalates to paid cloud models when a task genuinely needs it, with hard per-task and daily spend caps enforced at runtime.",
-      "<bold>Local-first:</bold> runs entirely against local models via Ollama for everyday tasks, keeping day-to-day coding cost close to zero.",
-      "<bold>Full agent pipeline:</bold> discover, plan, execute, validate, review, and gate, each phase running in an isolated git worktree with automatic repair attempts, so nothing touches your real branch until it's proven safe.",
-      "<bold>Benchmarking & grading:</bold> a built-in benchmark suite scores candidate models on real coding tasks, bug-catch rate, edit success, and latency, so routing decisions are backed by evidence, not guesswork.",
-      "<bold>Full run visibility:</bold> every run logs per-phase timing, token usage, and cost; a web dashboard for tracking and configuring runs is next up on the roadmap.",
-    ],
-    stack: ["Python", "Typer", "Ollama", "Claude API", "FastAPI", "React"],
-    status: "in-progress",
-    imagePalette: { from: "#0d0a1a", via: "#1c1236", to: "#2c1a4a" },
-  }
 ];
