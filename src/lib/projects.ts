@@ -24,6 +24,7 @@ export const projects: Project[] = [
       "<bold>Integrated tracker:</bold> manage workspaces, projects, milestones, and tickets in one local board, then launch a run from ticket detail.",
       "<bold>Bounded orchestration:</bold> deterministic workflow services keep scope, permissions, and test gates outside the model while the durable run graph exposes progress and recovery state.",
       "<bold>Per-role routing:</bold> configure provider and model profiles, reasoning effort, fallback chains, and workflow presets for each agent role.",
+      "<bold>Budget-aware model routing:</bold> use frontier models for planning and review, then cheaper, faster models for routine execution; full budget tracking and enforcement are still in progress.",
       "<bold>Skill manager:</bold> install, edit, version, and mirror repository guidance through an ownership-aware Skills UI.",
       "<bold>BrainDB project memory:</bold> surface workspace-scoped roadmap, in-flight work, decisions, and claim health in a structured Brain view.",
     ],
