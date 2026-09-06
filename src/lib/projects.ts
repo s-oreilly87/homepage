@@ -17,6 +17,28 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    title: "ThriftyAI",
+    description:
+      "A local control plane for coding-agent work that combines an integrated tracker with bounded orchestration, role-aware model routing, and project memory.",
+    highlights: [
+      "<bold>Integrated tracker:</bold> manage workspaces, projects, milestones, and tickets in one local board, then launch a run from ticket detail.",
+      "<bold>Bounded orchestration:</bold> deterministic workflow services keep scope, permissions, and test gates outside the model while the durable run graph exposes progress and recovery state.",
+      "<bold>Per-role routing:</bold> configure provider and model profiles, reasoning effort, fallback chains, and workflow presets for each agent role.",
+      "<bold>Skill manager:</bold> install, edit, version, and mirror repository guidance through an ownership-aware Skills UI.",
+      "<bold>BrainDB project memory:</bold> surface workspace-scoped roadmap, in-flight work, decisions, and claim health in a structured Brain view.",
+    ],
+    stack: ["Python", "FastAPI", "React", "TypeScript", "SQLite"],
+    status: "in-progress",
+    images: [
+      "/images/projects/thrifty-tracker.png",
+      "/images/projects/thrifty-execution.png",
+      "/images/projects/thrifty-models.png",
+      "/images/projects/thrifty-skills.png",
+      "/images/projects/thrifty-memory.png",
+    ],
+    imagePalette: { from: "#07150c", via: "#102519", to: "#193d23" },
+  },
+  {
     title: "Home Theatre Remote",
     description:
       "Multi-protocol AV controller that unifies Roku TV, Denon/Marantz AVR, an HTPC, and a gaming PC into a single, locally hosted PWA.",
@@ -114,25 +136,4 @@ export const projects: Project[] = [
       "/images/projects/trading-alerts-3.png",
     ],
   },
-  {
-    title: "ThriftyAI",
-    description:
-      "A control plane for coding agents that turns a tracker ticket into a reviewed pull request. Scope, validation, and delivery are enforced by code, with a durable run graph showing how each result was reached.",
-    highlights: [
-      "<bold>Watch the recorded walkthrough:</bold> open the title above for a tour of completed real execution history. Three consecutive local Reviewed runs reached verified pull requests and retained their delivery records after a controller restart.",
-      "<bold>Durable orchestration:</bold> the Engine owns workflow decisions; a separate queue owns claims, leases, and dispatch. Models work within bounded assignments.",
-      "<bold>Evidence at delivery:</bold> every accepted PR is tied to its candidate, validation report, review, and run-scoped receipt.",
-      "<bold>Visible progress:</bold> a React tracker, run graph, and Agent panel expose assignment activity, runtime selection, and recovery needs.",
-      "<bold>In development:</bold> expanding hierarchy and recovery qualification, then retiring the original phase pipeline. The recorded walkthrough shows the local standalone-ticket workflow.",
-    ],
-    stack: ["Python", "FastAPI", "React", "TypeScript", "SQLite"],
-    status: "in-progress",
-    href: "/videos/thrifty-reviewed-walkthrough.webm",
-    images: [
-      "/images/projects/thrifty-graph.png",
-      "/images/projects/thrifty-agent.png",
-      "/images/projects/thrifty-validation.png",
-    ],
-    imagePalette: { from: "#07150c", via: "#102519", to: "#193d23" },
-  }
 ];
