@@ -24,9 +24,10 @@ import { useEffect } from "react";
  *     jumps and no overshoot.
  *
  * `usedInner` keeps it to "at most two gestures per section": a CONTINUOUS gesture
- * that scrolled content to its end won't also snap (wait for a fresh gesture),
- * while DISCRETE scrolling — where each notch is its own gesture — snaps on the
- * very first notch after the content bottom is reached.
+ * that scrolled content to its end won't also snap (wait for a fresh gesture).
+ * Projects adds a longer boundary pause: after its card reaches the bottom, the
+ * user must leave at least one second of quiet before a new downward gesture can
+ * snap to Contact.
  *
  * A scroll-idle pass (runs for every pointer type, including touch) resets a
  * section's nested scrollers to the top once it leaves the viewport, so every
@@ -38,6 +39,7 @@ const LINE_PX = 40;          // px per line for deltaMode === 1 (Firefox mouse)
 const REACCEL = 2.2;         // a push this many× the decaying tail = a new gesture
 const REACCEL_FLOOR = 10;    // px; ignore momentum bumps smaller than a real push
 const REVERSAL_FLOOR = 6;    // px; ignore the tiny opposite "settle" blip after momentum
+const PROJECT_EXIT_QUIET_MS = 1_100; // pause at a card's bottom before Contact can snap
 
 export default function SnapController() {
   useEffect(() => {
@@ -64,6 +66,7 @@ export default function SnapController() {
     let ema = 0;           // running magnitude baseline (px) — tracks the momentum tail
     let peakMag = 0;       // peak magnitude of the current gesture
     let decayed = false;   // the gesture's momentum has been observed decaying
+    let projectBoundaryTs = 0; // latest downward wheel event at the project-card bottom
 
     function getPanels(): HTMLElement[] {
       return Array.from(document.querySelectorAll<HTMLElement>(".panel"));
@@ -218,27 +221,53 @@ export default function SnapController() {
       const panels = getPanels();
       const tops = topsOf(panels);
       const ci = currentIndex(tops);
+      const panel = panels[ci];
+      const inProjects = panel?.id === "projects";
+      if (!inProjects) projectBoundaryTs = 0;
 
       // Scroll the current panel's visible inner scroller while it can move (not
       // the element under the cursor — a fast wheel never moves the pointer; see
       // activeInner). Applying the raw delta keeps a trackpad's momentum feel and
       // gives both devices real partial-scroll feedback.
-      const inner = activeInner(panels[ci]);
+      const inner = activeInner(panel);
       if (inner) {
         const max = inner.scrollHeight - inner.clientHeight;
         const canMove = dir > 0 ? inner.scrollTop < max - 1 : inner.scrollTop > 1;
         if (canMove) {
           const next = inner.scrollTop + px;
           inner.scrollTop = next < 0 ? 0 : next > max ? max : next;
+          if (inProjects && dir > 0 && inner.scrollTop >= max - 1) {
+            projectBoundaryTs = now;
+          } else if (inProjects && dir < 0) {
+            projectBoundaryTs = 0;
+          }
           usedInner = true; // a continuous gesture can't also snap; a fresh one can
           return;
         }
       }
 
+      // Repeated downward input at a Projects card's bottom renews the hold. That
+      // lets someone discover the stack line without momentum or rapid wheel
+      // notches immediately moving them into Contact. Once they pause for over a
+      // second, the next deliberate downward gesture is allowed to snap.
+      if (
+        inProjects &&
+        dir > 0 &&
+        inner &&
+        projectBoundaryTs > 0
+      ) {
+        if (now - projectBoundaryTs < PROJECT_EXIT_QUIET_MS) {
+          projectBoundaryTs = now;
+          usedInner = true;
+          return;
+        }
+        projectBoundaryTs = 0;
+      }
+
       // At a content boundary, or a panel with no inner scroll. A CONTINUOUS
       // gesture that just scrolled content to its end must not also snap — wait
-      // for a fresh gesture. DISCRETE scrolling resets usedInner on every gap, so
-      // the first notch after the bottom snaps immediately.
+      // for a fresh gesture. Projects additionally waits for the boundary pause
+      // above before its first post-bottom snap.
       if (usedInner) return;
 
       snapTo(ci + dir, tops);
