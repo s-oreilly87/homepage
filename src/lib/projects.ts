@@ -17,6 +17,29 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    title: "ThriftyAI",
+    description:
+      "A local control plane for coding-agent work that combines an integrated tracker with bounded orchestration, role-aware model routing, and project memory.",
+    highlights: [
+      "<bold>Integrated tracker:</bold> manage workspaces, projects, milestones, and tickets in one local board, then launch a run from ticket detail.",
+      "<bold>Bounded orchestration:</bold> deterministic workflow services keep scope, permissions, and test gates outside the model while the durable run graph exposes progress and recovery state.",
+      "<bold>Per-role routing:</bold> configure provider and model profiles, reasoning effort, fallback chains, and workflow presets for each agent role.",
+      "<bold>Budget-aware model routing:</bold> use frontier models for planning and review, then cheaper, faster models for routine execution; full budget tracking and enforcement are still in progress.",
+      "<bold>Skill manager:</bold> install, edit, version, and mirror repository guidance through an ownership-aware Skills UI.",
+      "<bold>BrainDB project memory:</bold> surface workspace-scoped roadmap, in-flight work, decisions, and claim health in a structured Brain view.",
+    ],
+    stack: ["Python", "FastAPI", "React", "TypeScript", "SQLite"],
+    status: "in-progress",
+    images: [
+      "/images/projects/thrifty-tracker.png",
+      "/images/projects/thrifty-execution.png",
+      "/images/projects/thrifty-models.png",
+      "/images/projects/thrifty-skills.png",
+      "/images/projects/thrifty-memory.png",
+    ],
+    imagePalette: { from: "#07150c", via: "#102519", to: "#193d23" },
+  },
+  {
     title: "Home Theatre Remote",
     description:
       "Multi-protocol AV controller that unifies Roku TV, Denon/Marantz AVR, an HTPC, a gaming PC, and TP-Link smart-home devices into a single, locally hosted PWA — no cloud, no app store, no account.",
