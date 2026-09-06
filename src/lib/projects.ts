@@ -113,5 +113,26 @@ export const projects: Project[] = [
       "/images/projects/trading-alerts-2.png",
       "/images/projects/trading-alerts-3.png",
     ],
+  },
+  {
+    title: "ThriftyAI",
+    description:
+      "A control plane for coding agents that turns a tracker ticket into a reviewed pull request. Scope, validation, and delivery are enforced by code, with a durable run graph showing how each result was reached.",
+    highlights: [
+      "<bold>Watch the recorded walkthrough:</bold> open the title above for a tour of completed real execution history. Three consecutive local Reviewed runs reached verified pull requests and retained their delivery records after a controller restart.",
+      "<bold>Durable orchestration:</bold> the Engine owns workflow decisions; a separate queue owns claims, leases, and dispatch. Models work within bounded assignments.",
+      "<bold>Evidence at delivery:</bold> every accepted PR is tied to its candidate, validation report, review, and run-scoped receipt.",
+      "<bold>Visible progress:</bold> a React tracker, run graph, and Agent panel expose assignment activity, runtime selection, and recovery needs.",
+      "<bold>In development:</bold> expanding hierarchy and recovery qualification, then retiring the original phase pipeline. The recorded walkthrough shows the local standalone-ticket workflow.",
+    ],
+    stack: ["Python", "FastAPI", "React", "TypeScript", "SQLite"],
+    status: "in-progress",
+    href: "/videos/thrifty-reviewed-walkthrough.webm",
+    images: [
+      "/images/projects/thrifty-graph.png",
+      "/images/projects/thrifty-agent.png",
+      "/images/projects/thrifty-validation.png",
+    ],
+    imagePalette: { from: "#07150c", via: "#102519", to: "#193d23" },
   }
 ];
